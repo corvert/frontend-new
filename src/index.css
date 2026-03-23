@@ -1,0 +1,44 @@
+/* add google fonts */
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-headerColor: #242530;
+  --color-textColor: #ffffff;
+  --color-btnColor: #0172f4;
+  --color-noteColor: #ffcf7c;
+  --color-customRed: rgba(172, 30, 35, 1);
+  --color-testimonialCard: #f9f9f9;
+
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-dancingScript: "Dancing Script", cursive;
+
+  --font-weight-customWeight: 500;
+
+  --spacing-headerHeight: 74px;
+  --spacing-navbarHeight: 420px;
+  --spacing-customHeight: 530px;
+
+  --text-logoText: 30px;
+  --text-customText: 15px;
+  --text-tablehHeaderText: 16px;
+  --text-headerText: 50px;
+  --text-headerText--line-height: 60px;
+  --text-tableHeader: 15px;
+  --text-tableHeader--line-height: 25px;
+
+  --shadow-custom: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* add custom effect to the table row */
+.MuiDataGrid-row:nth-of-type(odd) {
+  background-color: #eee6e6;
+}
+
+.MuiDataGrid-row:nth-of-type(even) {
+  background-color: #ffffff;
+}
+
+/* custom effect for the table */
