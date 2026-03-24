@@ -124,7 +124,7 @@ const Login = () => {
         <React.Fragment>
           <form
             onSubmit={handleSubmit(onLoginHandler)}
-            className="sm:w-[450px] w-[360px]  shadow-custom py-8 sm:px-8 px-4"
+            className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
               <h1 className="font-montserrat text-center font-bold text-2xl">
@@ -215,7 +215,7 @@ const Login = () => {
         <React.Fragment>
           <form
             onSubmit={handleSubmit(onVerify2FaHandler)}
-            className="sm:w-[450px] w-[360px]  shadow-custom py-8 sm:px-8 px-4"
+            className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
               <h1 className="font-montserrat text-center font-bold text-2xl">

@@ -90,9 +90,7 @@ const NoteDetails = () => {
   const rows = auditLogs.map((item) => {
     //moment npm package is used to format the date
 
-    const formattedDate = moment(item.timestamp).format(
-      "MMMM DD, YYYY, hh:mm A"
-    );
+    const formattedDate = moment(item.timestamp).format("MMMM DD, YYYY, hh:mm A");
 
     //set the data for each rows in the table according to the field name in columns
     //Example: username is the keyword in row it should matche with the field name in column so that the data will show on that column dynamically
@@ -219,13 +217,7 @@ const NoteDetails = () => {
                             },
                           ],
                           [{ size: [] }],
-                          [
-                            "bold",
-                            "italic",
-                            "underline",
-                            "strike",
-                            "blockquote",
-                          ],
+                          ["bold", "italic", "underline", "strike", "blockquote"],
                           [
                             { list: "ordered" },
                             { list: "bullet" },
@@ -242,11 +234,7 @@ const NoteDetails = () => {
                       onClickhandler={onNoteEditHandler}
                       className="bg-customRed  md:mt-16 mt-28 text-white px-4 py-2 hover:text-slate-300 rounded-sm"
                     >
-                      {noteEditLoader ? (
-                        <span>Loading...</span>
-                      ) : (
-                        " Update Note"
-                      )}
+                      {noteEditLoader ? <span>Loading...</span> : " Update Note"}
                     </Buttons>
                   </div>
                 </>

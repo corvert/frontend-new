@@ -29,7 +29,7 @@ const CreateNote = () => {
       toast.success("Note create successful");
       navigate("/notes");
     } catch (err) {
-      toast.error("Error creating note");
+      toast.error("Error creating note", err);
     } finally {
       setLoading(false);
     }
@@ -58,12 +58,7 @@ const CreateNote = () => {
               ],
               [{ size: [] }],
               ["bold", "italic", "underline", "strike", "blockquote"],
-              [
-                { list: "ordered" },
-                { list: "bullet" },
-                { indent: "-1" },
-                { indent: "+1" },
-              ],
+              [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
               ["clean"],
             ],
           }}

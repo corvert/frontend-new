@@ -15,7 +15,7 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`fixed p-2 top-[74px] min-h-[calc(100vh-74px)] max-h-[calc(100vh-74px)]  z-20  left-0 bg-headerColor ${
+      className={`fixed p-2 top-headerHeight min-h-[calc(100vh-74px)] max-h-[calc(100vh-74px)]  z-20  left-0 bg-headerColor ${
         openSidebar ? "w-52" : "w-12"
       } transition-all duration-150  `}
     >

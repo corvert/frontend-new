@@ -322,7 +322,7 @@ const UserProfile = () => {
       ) : (
         <>
           {" "}
-          <div className="xl:w-[70%] lg:w-[80%] sm:w-[90%] w-full sm:mx-auto sm:px-0 px-4   min-h-[500px] flex lg:flex-row flex-col gap-4 ">
+          <div className="xl:w-[70%] lg:w-[80%] sm:w-[90%] w-full sm:mx-auto sm:px-0 px-4   min-h-125 flex lg:flex-row flex-col gap-4 ">
             <div className="flex-1  flex flex-col shadow-lg shadow-gray-300 gap-2 px-4 py-6">
               <div className="flex flex-col items-center gap-2   ">
                 <Avatar
