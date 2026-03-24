@@ -3,7 +3,7 @@ import Tooltip from "@mui/material/Tooltip";
 import { IconButton } from "@mui/material";
 import { truncateText } from "../../utils/truncateText";
 import { Link } from "react-router-dom";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import moment from "moment";
 
 const NoteItems = ({ parsedContent, id, createdAt }) => {

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api";
-import "react-quill/dist/quill.snow.css";
 import { Blocks } from "react-loader-spinner";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import moment from "moment";
 import { DataGrid } from "@mui/x-data-grid";
 import Buttons from "../../utils/Buttons";
