@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "../../services/api.jsx";
+import api from "../../services/api.js";
 import { DataGrid } from "@mui/x-data-grid";
 import toast from "react-hot-toast";
 import { Blocks } from "react-loader-spinner";
@@ -132,9 +132,7 @@ const UserList = () => {
   }, []);
 
   const rows = users.map((item) => {
-    const formattedDate = moment(item.createdDate).format(
-      "MMMM DD, YYYY, hh:mm A"
-    );
+    const formattedDate = moment(item.createdDate).format("MMMM DD, YYYY, hh:mm A");
 
     //set the data for each rows in the table according to the field name in columns
     //Example: username is the keyword in row it should matche with the field name in column so that the data will show on that column dynamically
@@ -154,9 +152,7 @@ const UserList = () => {
   return (
     <div className="p-4">
       <div className="py-4">
-        <h1 className="text-center text-2xl font-bold text-slate-800 uppercase">
-          All Users
-        </h1>
+        <h1 className="text-center text-2xl font-bold text-slate-800 uppercase">All Users</h1>
       </div>
       <div className="overflow-x-auto w-full mx-auto">
         {loading ? (

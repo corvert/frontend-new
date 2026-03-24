@@ -83,7 +83,7 @@ const Signup = () => {
     <div className="min-h-[calc(100vh-74px)] flex justify-center items-center">
       <form
         onSubmit={handleSubmit(onSubmitHandler)}
-        className="sm:w-[450px] w-[360px]  shadow-custom py-6 sm:px-8 px-4"
+        className="sm:w-112.5 w-90  shadow-custom py-6 sm:px-8 px-4"
       >
         <div>
           <h1 className="font-montserrat text-center font-bold text-2xl">
