@@ -7,7 +7,7 @@ import "react-quill-new/dist/quill.snow.css";
 import moment from "moment";
 
 const NoteItems = ({ parsedContent, id, createdAt }) => {
-  const formattedDate = moment(createdAt).format("D MMMM YYYY");
+  const formattedDate = moment(createdAt).format("D.MM.YYYY");
   return (
     <div className="sm:px-5 px-2 py-5 shadow-md bg-noteColor shadow-white rounded-lg min-h-96 max-h-96 relative overflow-hidden ">
       <p

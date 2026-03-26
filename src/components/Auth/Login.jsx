@@ -73,9 +73,7 @@ const Login = () => {
           handleSuccessfulLogin(response.data.jwtToken, decodedToken);
         }
       } else {
-        toast.error(
-          "Login failed. Please check your credentials and try again."
-        );
+        toast.error("Login failed. Please check your credentials and try again.");
       }
     } catch (error) {
       if (error) {
@@ -127,12 +125,8 @@ const Login = () => {
             className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
-              <h1 className="font-montserrat text-center font-bold text-2xl">
-                Login Here
-              </h1>
-              <p className="text-slate-600 text-center">
-                Please Enter your username and password{" "}
-              </p>
+              <h1 className="font-montserrat text-center font-bold text-2xl">Login Here</h1>
+              <p className="text-slate-600 text-center">Please Enter your username and password </p>
               <div className="flex items-center justify-between gap-1 py-5 ">
                 <Link
                   to={`${apiUrl}/oauth2/authorization/google`}
@@ -187,25 +181,19 @@ const Login = () => {
               disabled={loading}
               onClickhandler={() => {}}
               className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
-              type="text"
+              type="submit"
             >
               {loading ? <span>Loading...</span> : "LogIn"}
             </Buttons>
             <p className=" text-sm text-slate-700 ">
-              <Link
-                className=" underline hover:text-black"
-                to="/forgot-password"
-              >
+              <Link className=" underline hover:text-black" to="/forgot-password">
                 Forgot Password?
               </Link>
             </p>
 
             <p className="text-center text-sm text-slate-700 mt-6">
               Don't have an account?{" "}
-              <Link
-                className="font-semibold underline hover:text-black"
-                to="/signup"
-              >
+              <Link className="font-semibold underline hover:text-black" to="/signup">
                 SignUp
               </Link>
             </p>
@@ -218,9 +206,7 @@ const Login = () => {
             className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
-              <h1 className="font-montserrat text-center font-bold text-2xl">
-                Verify 2FA
-              </h1>
+              <h1 className="font-montserrat text-center font-bold text-2xl">Verify 2FA</h1>
               <p className="text-slate-600 text-center">
                 Enter the correct code to complete 2FA Authentication
               </p>
@@ -244,7 +230,7 @@ const Login = () => {
               disabled={loading}
               onClickhandler={() => {}}
               className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
-              type="text"
+              type="submit"
             >
               {loading ? <span>Loading...</span> : "Verify 2FA"}
             </Buttons>

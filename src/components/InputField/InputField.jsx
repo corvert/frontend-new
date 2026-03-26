@@ -8,6 +8,7 @@ const InputField = ({
   message,
   className,
   min,
+  validate,
   value,
   autoFocus,
   placeholder,
@@ -30,17 +31,14 @@ const InputField = ({
         }`}
         {...register(id, {
           required: { value: required, message },
-          minLength: min
-            ? { value: min, message: "Minimum 6 character is required" }
-            : null,
+          minLength: min ? { value: min, message: "Minimum 6 character is required" } : null,
+          validate,
         })}
         readOnly={readOnly}
       />
 
       {errors[id]?.message && (
-        <p className="text-sm font-semibold text-red-500 mt-0">
-          {errors[id]?.message}*
-        </p>
+        <p className="text-sm font-semibold text-red-500 mt-0">{errors[id]?.message}*</p>
       )}
     </div>
   );

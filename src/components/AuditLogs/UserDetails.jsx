@@ -12,6 +12,7 @@ const UserDetails = () => {
   const {
     register,
     handleSubmit,
+      watch,
     setValue,
     formState: { errors },
   } = useForm({
@@ -19,6 +20,7 @@ const UserDetails = () => {
       username: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
     mode: "onSubmit",
   });
@@ -117,6 +119,7 @@ const UserDetails = () => {
       });
       setIsEditingPassword(false);
       setValue("password", "");
+      setValue("confirmPassword", "");
       //fetchUserDetails();
       toast.success("password update success");
     } catch (err) {
@@ -229,12 +232,28 @@ const UserDetails = () => {
                   className="w-full"
                   type="password"
                   message="*Password is required"
-                  placeholder="Enter your Password"
+                  placeholder="Enter new Password"
                   register={register}
                   errors={errors}
                   readOnly={!isEditingPassword}
                   min={6}
-                />{" "}
+                />
+                 <InputField
+                  label="Confirm Password"
+                  required
+                  autoFocus={isEditingPassword}
+                  id="confirmPassword"
+                  className="w-full"
+                  type="password"
+                  message="*Confirm Password is required"
+                  placeholder="Confirm new Password"
+                  register={register }
+                  errors={errors}
+                  readOnly={!isEditingPassword}
+                  min={6}
+                  validate={(value) => value === watch("password") || "Passwords do not match"}
+                />
+                {" "}
                 {!isEditingPassword ? (
                   <Buttons
                     type="button"

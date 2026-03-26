@@ -11,13 +11,11 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   // Access the states by using the useMyContext hook from the ContextProvider
-  const { token, setToken, setCurrentUser, isAdmin, setIsAdmin } =
-    useMyContext();
+  const { token, setToken, setCurrentUser, isAdmin, setIsAdmin } = useMyContext();
 
   const handleLogout = () => {
     localStorage.removeItem("JWT_TOKEN"); // Updated to remove token from localStorage
     localStorage.removeItem("USER"); // Remove user details as well
-    localStorage.removeItem("CSRF_TOKEN");
     localStorage.removeItem("IS_ADMIN");
     setToken(null);
     setCurrentUser(null);
@@ -123,11 +121,7 @@ const Navbar = () => {
           onClick={() => setHeaderToggle(!headerToggle)}
           className="lg:hidden block cursor-pointer text-textColor  shadow-md hover:text-slate-400"
         >
-          {headerToggle ? (
-            <RxCross2 className=" text-2xl" />
-          ) : (
-            <IoMenu className=" text-2xl" />
-          )}
+          {headerToggle ? <RxCross2 className=" text-2xl" /> : <IoMenu className=" text-2xl" />}
         </span>
       </nav>
     </header>

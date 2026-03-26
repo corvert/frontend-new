@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import api from "../../services/api";
 import { DataGrid } from "@mui/x-data-grid";
 import { Blocks } from "react-loader-spinner";
 import Errors from "../Errors.jsx";
 import moment from "moment";
-
-//importing the the columns from the auditlogs
 import { auditLogscolumn } from "../../utils/tableColumn.jsx";
+import Buttons from "../../utils/Buttons.jsx";
 
 const AuditLogsDetails = () => {
   //access the notid
@@ -38,7 +37,7 @@ const AuditLogsDetails = () => {
 
   const rows = auditLogs.map((item) => {
     const formattedDate = moment(item.timestamp).format(
-      "MMMM DD, YYYY, hh:mm A"
+      "DD.MM.YYYY, HH:mm"
     );
 
     //set the data for each rows in the table according to the field name in columns
@@ -94,6 +93,7 @@ const AuditLogsDetails = () => {
             <>
               {" "}
               <div className="overflow-x-auto w-full">
+                
                 <DataGrid
                   className="w-fit mx-auto px-0"
                   rows={rows}
@@ -101,14 +101,14 @@ const AuditLogsDetails = () => {
                   initialState={{
                     pagination: {
                       paginationModel: {
-                        pageSize: 6,
+                        pageSize: 10,
                       },
                     },
                   }}
                   disableRowSelectionOnClick
-                  pageSizeOptions={[6]}
+                  pageSizeOptions={[10]}
                   disableColumnResize
-                />
+                />      
               </div>
             </>
           )}{" "}
