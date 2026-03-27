@@ -1,0 +1,102 @@
+{
+  "lang": {
+    "en": "EN",
+    "et": "EE"
+  },
+  "nav": {
+    "myNotes": "Minu märkmed",
+    "createNote": "Loo märge",
+    "contact": "Kontakt",
+    "about": "Meist",
+    "profile": "Profiil",
+    "admin": "Admin",
+    "logout": "Logi välja",
+    "signup": "Registreeru"
+  },
+  "footer": {
+    "aboutUs": "Meist",
+    "services": "Teenused",
+    "contact": "Kontakt",
+    "privacy": "Privaatsuspoliitika",
+    "rights": "Koik oigused kaitstud."
+  },
+  "landing": {
+    "title": "Muuda oma moed turvalisteks ja korrastatud markmeteks kiiremini.",
+    "subtitle": "Nr 1 turvaline markmete rakendus.",
+    "description": "Halda oma markmeid lihtsalt ja turvaliselt. Kirjuta, salvesta ja ava neid koikjalt tugeva krupteeringu ning sujuva sunkroonimisega.",
+    "signIn": "Logi sisse",
+    "signUp": "Registreeru",
+    "brandsTitle": "Veel pohjuseid, miks ettevotted ule maailma meid valivad",
+    "testimonial": "Tagasiside"
+  },
+  "contact": {
+    "title": "Vota uhendust",
+    "description": "Meil on hea meel sinust kuulda! Kui sul on kusimusi voi tagasisidet, vota meiega uhendust.",
+    "name": "Nimi",
+    "email": "E-post",
+    "message": "Sonum",
+    "send": "Saada sonum"
+  },
+  "about": {
+    "title": "Meist",
+    "intro": "Tere tulemast SecureNote'i, sinu usaldusvaarsesse turvaliste ja privaatsete markmete kaaslasesse. Usume, et sinu motetel ja ideedel peab olema koige tugevam kaitse. Meie missioon on tagada, et sinu markmed on alati ligipaasetavad ainult sulle. Tipptasemel krupteeringu ja kasutajasobralike funktsioonidega hoiab SecureNote sinu info konfidentsiaalse ja turvalisena.",
+    "point1": "Lisa turvalisusele lisakiht kaheastmelise autentimisega.",
+    "point2": "Sinu markmed on krupteeritud juba loomise hetkest.",
+    "point3": "Paeaase markmetele ligi koikjalt teadmisega, et need on turvaliselt salvestatud.",
+    "point4": "Meie rakendus on intuitiivne ja lihtsasti kasutatav."
+  },
+  "notFound": {
+    "title": "Midagi on puudu.",
+    "description": "Vabandust, me ei leia seda lehte. Avalehelt leiad palju avastamist.",
+    "backHome": "Tagasi avalehele"
+  },
+  "auth": {
+    "or": "VOI",
+    "loginHere": "Logi sisse",
+    "loginDescription": "Sisesta oma kasutajanimi ja parool",
+    "loginGoogle": "Logi sisse Google'iga",
+    "loginGithub": "Logi sisse GitHubiga",
+    "username": "Kasutajanimi",
+    "usernameRequired": "*Kasutajanimi on kohustuslik",
+    "usernamePlaceholder": "Sisesta kasutajanimi",
+    "password": "Parool",
+    "passwordRequired": "*Parool on kohustuslik",
+    "passwordPlaceholder": "Sisesta parool",
+    "loading": "Laadimine...",
+    "login": "Logi sisse",
+    "forgotPassword": "Unustasid parooli?",
+    "noAccount": "Pole veel kontot?",
+    "verify2fa": "Kinnita 2FA",
+    "verify2faDescription": "Sisesta oige kood, et lopetada 2FA autentimine",
+    "enterCode": "Sisesta kood",
+    "codeRequired": "*Kood on kohustuslik",
+    "codePlaceholder": "Sisesta oma 2FA kood",
+    "verify2faButton": "Kinnita 2FA",
+    "registerTitle": "Registreeru",
+    "registerDescription": "Sisesta andmed uue konto loomiseks",
+    "email": "E-post",
+    "emailRequired": "*E-post on kohustuslik",
+    "emailPlaceholder": "Sisesta e-post",
+    "register": "Registreeru",
+    "hasAccount": "Kas sul on juba konto?",
+    "forgotTitle": "Unustasid parooli?",
+    "forgotDescription": "Sisesta oma e-post ja saadame parooli taastamise kirja",
+    "send": "Saada",
+    "backLogin": "Tagasi sisselogimisse",
+    "resetTitle": "Uuenda oma parooli",
+    "resetDescription": "Sisesta uus parool, et see uuendada",
+    "submit": "Kinnita",
+    "resetPasswordPlaceholder": "Sisesta parool"
+  },
+  "toast": {
+    "loginSuccess": "Sisselogimine onnistus",
+    "loginFailed": "Sisselogimine ebaonnestus. Kontrolli andmeid ja proovi uuesti.",
+    "invalidCredentials": "Valed sisselogimisandmed",
+    "invalid2fa": "Vale 2FA kood. Proovi uuesti.",
+    "registerSuccess": "Registreerimine onnistus",
+    "forgotSent": "Parooli taastamise kiri on saadetud. Kontrolli postkasti.",
+    "forgotError": "Viga parooli taastamise kirja saatmisel. Proovi uuesti.",
+    "resetSuccess": "Parool uuendatud! Nuud saad sisse logida.",
+    "resetError": "Parooli uuendamine ebaonnestus. Proovi uuesti."
+  }
+}

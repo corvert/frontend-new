@@ -6,6 +6,7 @@ import Brands from "./LandingPageCom/Brands/Brands";
 import State from "./LandingPageCom/State";
 import Testimonial from "./LandingPageCom/Testimonial/Testimonial";
 import { useMyContext } from "../store/ContextApi";
+import { useTranslation } from "react-i18next";
 
 const fadeInFromTop = {
   hidden: { opacity: 0, y: -50 },
@@ -19,6 +20,7 @@ const fadeInFromBotom = {
 const LandingPage = () => {
   // Access the token  state by using the useMyContext hook from the ContextProvider
   const { token } = useMyContext();
+  const { t } = useTranslation();
 
   return (
     <div className="min-h-[calc(100vh-74px)] flex justify-center">
@@ -29,15 +31,13 @@ const LandingPage = () => {
           animate="visible"
           variants={fadeInFromTop}
         >
-          Turn your thoughts into secure, organized notes And Faster.
+          {t("landing.title")}
         </motion.h1>
         <h3 className="text-logoText md:text-2xl text-xl font-semibold text-slate-800 text-center">
-          The #1 secure note-taking app.
+          {t("landing.subtitle")}
         </h3>
         <p className="text-slate-700 text-center sm:w-[80%] w-[90%] mx-auto">
-          Manage your notes effortlessly and securely. Just type, save, and
-          access them from anywhere with robust encryption and seamless
-          synchronization.
+          {t("landing.description")}
         </p>
         <motion.div
           initial="hidden"
@@ -49,12 +49,12 @@ const LandingPage = () => {
             <>
               <Link to="/create-note">
                 <Buttons className="sm:w-52 w-44 bg-customRed font-semibold hover:scale-105 transition-all duration-200 cursor-pointer text-white px-10 py-3 rounded-sm">
-                  Create Note
+                  {t("nav.createNote")}
                 </Buttons>
               </Link>
               <Link to="/notes">
                 <Buttons className="sm:w-52 w-44 bg-btnColor font-semibold hover:scale-105 transition-all duration-200 cursor-pointer text-white px-10 py-3 rounded-sm">
-                  My Notes
+                  {t("nav.myNotes")}
                 </Buttons>
               </Link>
             </>
@@ -62,12 +62,12 @@ const LandingPage = () => {
             <>
               <Link to="/login">
                 <Buttons className="sm:w-52 w-44 bg-customRed font-semibold hover:scale-105 transition-all duration-200 cursor-pointer text-white px-10 py-3 rounded-sm">
-                  SignIn
+                  {t("landing.signIn")}
                 </Buttons>
               </Link>
               <Link to="/signup">
                 <Buttons className="sm:w-52 w-44 bg-btnColor font-semibold hover:scale-105 transition-all duration-200 cursor-pointer text-white px-10 py-3 rounded-sm">
-                  SignUp
+                  {t("landing.signUp")}
                 </Buttons>
               </Link>
             </>
@@ -76,7 +76,7 @@ const LandingPage = () => {
         .
         <div className="sm:pt-14 pt-0 xl:px-16 md:px-10">
           <h1 className="font-montserrat uppercase text-headerColor  xl:text-headerText md:text-4xl text-2xl  mx-auto text-center font-bold  w-full">
-            More Reasons Company Around the world workable
+            {t("landing.brandsTitle")}
           </h1>
           <Brands />
           <State />
@@ -85,7 +85,7 @@ const LandingPage = () => {
               className="font-montserrat uppercase text-headerColor pb-16  xl:text-headerText md:text-4xl text-2xl  mx-auto text-center font-bold sm:w-[95%] w-full"
               variants={fadeInFromBotom}
             >
-              Testimonial
+              {t("landing.testimonial")}
             </h1>
             <Testimonial />
           </div>

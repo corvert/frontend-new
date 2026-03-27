@@ -1,42 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaInstagram,
-} from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 //import aboutImage from "./path/to/your/image.jpg"; // Add your image path here
 
 const AboutPage = () => {
+  const { t } = useTranslation();
   return (
     <div className=" p-8   bg-gray-100 min-h-screen">
       <div className="md:w-1/2">
-        <h1 className="text-4xl font-bold mb-4">About Us</h1>
-        <p className="mb-4">
-          Welcome to SecureNote, your trusted companion for secure and private
-          note-taking. We believe in providing a safe space where your thoughts
-          and ideas are protected with the highest level of security. Our
-          mission is to ensure that your notes are always accessible to you and
-          only you. With state-of-the-art encryption and user-friendly features,
-          SecureNote is designed to keep your information confidential and
-          secure.
-        </p>
+        <h1 className="text-4xl font-bold mb-4">{t("about.title")}</h1>
+        <p className="mb-4">{t("about.intro")}</p>
 
         <ul className="list-disc list-inside mb-4 text-sm px-6 py-2">
-          <li className="mb-2">
-            Add an extra layer of security with two-factor authentication.
-          </li>
-          <li className="mb-2">
-            Your notes are encrypted from the moment you create them
-          </li>
-          <li className="mb-2">
-            Access your notes from anywhere with the assurance that they are
-            stored .
-          </li>
-          <li className="mb-2">
-            Our app is designed to be intuitive and easy to use.
-          </li>
+          <li className="mb-2">{t("about.point1")}</li>
+          <li className="mb-2">{t("about.point2")}</li>
+          <li className="mb-2">{t("about.point3")}</li>
+          <li className="mb-2">{t("about.point4")}</li>
         </ul>
         <div className="flex space-x-4 mt-10">
           <Link className="text-white rounded-full p-2 bg-customRed  " to="/">

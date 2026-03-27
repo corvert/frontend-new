@@ -11,6 +11,7 @@ import Buttons from "../../utils/Buttons";
 import toast from "react-hot-toast";
 import { useMyContext } from "../../store/ContextApi";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -22,6 +23,7 @@ const Login = () => {
   // Access the token and setToken function using the useMyContext hook from the ContextProvider
   const { setToken, token } = useMyContext();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   //react hook form initialization
   const {
@@ -59,7 +61,7 @@ const Login = () => {
       const response = await api.post("/auth/public/signin", data);
 
       //showing success message with react hot toast
-      toast.success("Login Successful");
+      toast.success(t("toast.loginSuccess"));
 
       //reset the input field by using reset() function provided by react hook form after submission
       reset();
@@ -73,11 +75,11 @@ const Login = () => {
           handleSuccessfulLogin(response.data.jwtToken, decodedToken);
         }
       } else {
-        toast.error("Login failed. Please check your credentials and try again.");
+        toast.error(t("toast.loginFailed"));
       }
     } catch (error) {
       if (error) {
-        toast.error("Invalid credentials");
+        toast.error(t("toast.invalidCredentials"));
       }
     } finally {
       setLoading(false);
@@ -104,7 +106,7 @@ const Login = () => {
       handleSuccessfulLogin(jwtToken, decodedToken);
     } catch (error) {
       console.error("2FA verification error", error);
-      toast.error("Invalid 2FA code. Please try again.");
+      toast.error(t("toast.invalid2fa"));
     } finally {
       setLoading(false);
     }
@@ -125,8 +127,10 @@ const Login = () => {
             className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
-              <h1 className="font-montserrat text-center font-bold text-2xl">Login Here</h1>
-              <p className="text-slate-600 text-center">Please Enter your username and password </p>
+              <h1 className="font-montserrat text-center font-bold text-2xl">
+                {t("auth.loginHere")}
+              </h1>
+              <p className="text-slate-600 text-center">{t("auth.loginDescription")}</p>
               <div className="flex items-center justify-between gap-1 py-5 ">
                 <Link
                   to={`${apiUrl}/oauth2/authorization/google`}
@@ -136,7 +140,7 @@ const Login = () => {
                     <FcGoogle className="text-2xl" />
                   </span>
                   <span className="font-semibold sm:text-customText text-xs">
-                    Login with Google
+                    {t("auth.loginGoogle")}
                   </span>
                 </Link>
                 <Link
@@ -147,32 +151,32 @@ const Login = () => {
                     <FaGithub className="text-2xl" />
                   </span>
                   <span className="font-semibold sm:text-customText text-xs">
-                    Login with Github
+                    {t("auth.loginGithub")}
                   </span>
                 </Link>
               </div>
 
-              <Divider className="font-semibold">OR</Divider>
+              <Divider className="font-semibold">{t("auth.or")}</Divider>
             </div>
 
             <div className="flex flex-col gap-2">
               <InputField
-                label="UserName"
+                label={t("auth.username")}
                 required
                 id="username"
                 type="text"
-                message="*UserName is required"
-                placeholder="type your username"
+                message={t("auth.usernameRequired")}
+                placeholder={t("auth.usernamePlaceholder")}
                 register={register}
                 errors={errors}
               />{" "}
               <InputField
-                label="Password"
+                label={t("auth.password")}
                 required
                 id="password"
                 type="password"
-                message="*Password is required"
-                placeholder="type your password"
+                message={t("auth.passwordRequired")}
+                placeholder={t("auth.passwordPlaceholder")}
                 register={register}
                 errors={errors}
               />
@@ -183,18 +187,18 @@ const Login = () => {
               className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
               type="submit"
             >
-              {loading ? <span>Loading...</span> : "LogIn"}
+              {loading ? <span>{t("auth.loading")}</span> : t("auth.login")}
             </Buttons>
             <p className=" text-sm text-slate-700 ">
               <Link className=" underline hover:text-black" to="/forgot-password">
-                Forgot Password?
+                {t("auth.forgotPassword")}
               </Link>
             </p>
 
             <p className="text-center text-sm text-slate-700 mt-6">
-              Don't have an account?{" "}
+              {t("auth.noAccount")}{" "}
               <Link className="font-semibold underline hover:text-black" to="/signup">
-                SignUp
+                {t("nav.signup")}
               </Link>
             </p>
           </form>
@@ -206,22 +210,22 @@ const Login = () => {
             className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
           >
             <div>
-              <h1 className="font-montserrat text-center font-bold text-2xl">Verify 2FA</h1>
-              <p className="text-slate-600 text-center">
-                Enter the correct code to complete 2FA Authentication
-              </p>
+              <h1 className="font-montserrat text-center font-bold text-2xl">
+                {t("auth.verify2fa")}
+              </h1>
+              <p className="text-slate-600 text-center">{t("auth.verify2faDescription")}</p>
 
               <Divider className="font-semibold pb-4"></Divider>
             </div>
 
             <div className="flex flex-col gap-2 mt-4">
               <InputField
-                label="Enter Code"
+                label={t("auth.enterCode")}
                 required
                 id="code"
                 type="text"
-                message="*Code is required"
-                placeholder="Enter your 2FA code"
+                message={t("auth.codeRequired")}
+                placeholder={t("auth.codePlaceholder")}
                 register={register}
                 errors={errors}
               />
@@ -232,7 +236,7 @@ const Login = () => {
               className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
               type="submit"
             >
-              {loading ? <span>Loading...</span> : "Verify 2FA"}
+              {loading ? <span>{t("auth.loading")}</span> : t("auth.verify2faButton")}
             </Buttons>
           </form>
         </React.Fragment>

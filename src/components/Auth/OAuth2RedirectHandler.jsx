@@ -30,7 +30,7 @@ const OAuth2RedirectHandler = () => {
 
         // Update context state
         setToken(token);
-        setIsAdmin(user.roles.includes('ADMIN'));
+        setIsAdmin(user.roles.includes('ROLE_ADMIN'));
 
         // Delay navigation to ensure local storage operations complete
         setTimeout(() => {

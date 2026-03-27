@@ -1,42 +1,41 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaInstagram,
-} from "react-icons/fa";
+import { FaFacebookF, FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation();
   return (
     <footer className="bg-headerColor py-6 lg:py-2  min-h-28 z-50  relative">
       <div className="xl:px-10 sm:px-6 px-4  min-h-28  flex lg:flex-row flex-col  lg:gap-0 gap-5  justify-between items-center ">
         <ul className="flex flex-1  md:gap-6 gap-4   text-white flex-row items-center ">
           <li>
             <Link to="/about">
-              <span className="hover:underline">About Us</span>
+              <span className="hover:underline">{t("footer.aboutUs")}</span>
             </Link>
           </li>
           <li>
             <Link to="/">
-              <span className="hover:underline">Services</span>
+              <span className="hover:underline">{t("footer.services")}</span>
             </Link>
           </li>
           <li>
             <Link to="/contact">
-              <span className="hover:underline">Contact</span>
+              <span className="hover:underline">{t("footer.contact")}</span>
             </Link>
           </li>
           <li>
             <Link to="/">
-              <span className="hover:underline">Privacy Policy</span>
+              <span className="hover:underline">{t("footer.privacy")}</span>
             </Link>
           </li>
         </ul>
 
         <p className="w-fit  flex items-center text-white text-sm">
-          <span>&copy;{currentYear} SecureNote | All rights reserved.</span>
+          <span>
+            &copy;{currentYear} SecureNote | {t("footer.rights")}
+          </span>
         </p>
 
         <div className="flex-1  flex flex-row gap-6 lg:justify-end justify-start items-center">

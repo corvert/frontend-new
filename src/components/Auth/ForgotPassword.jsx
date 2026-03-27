@@ -8,10 +8,12 @@ import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useMyContext } from "../../store/ContextApi";
+import { useTranslation } from "react-i18next";
 
 const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Access the token  using the useMyContext hook from the ContextProvider
   const { token } = useMyContext();
 
@@ -47,9 +49,9 @@ const ForgotPassword = () => {
       reset();
 
       //showing success message
-      toast.success("Password reset email sent! Check your inbox.");
+      toast.success(t("toast.forgotSent"));
     } catch (error) {
-      toast.error("Error sending password reset email. Please try again.");
+      toast.error(t("toast.forgotError"));
     } finally {
       setLoading(false);
     }
@@ -68,22 +70,20 @@ const ForgotPassword = () => {
       >
         <div>
           <h1 className="font-montserrat text-center font-bold text-2xl">
-            Forgot Password?
+            {t("auth.forgotTitle")}
           </h1>
-          <p className="text-slate-600 text-center">
-            Enter your email a Password reset email will sent
-          </p>
+          <p className="text-slate-600 text-center">{t("auth.forgotDescription")}</p>
         </div>
         <Divider className="font-semibold pb-4"></Divider>
 
         <div className="flex flex-col gap-2 mt-4">
           <InputField
-            label="Email"
+            label={t("auth.email")}
             required
             id="email"
             type="email"
-            message="*Email is required"
-            placeholder="enter your email"
+            message={t("auth.emailRequired")}
+            placeholder={t("auth.emailPlaceholder")}
             register={register}
             errors={errors}
           />{" "}
@@ -94,11 +94,11 @@ const ForgotPassword = () => {
           className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
           type="text"
         >
-          {loading ? <span>Loading...</span> : "Send"}
+          {loading ? <span>{t("auth.loading")}</span> : t("auth.send")}
         </Buttons>
         <p className=" text-sm text-slate-700 ">
           <Link className=" underline hover:text-black" to="/login">
-            Back To Login
+            {t("auth.backLogin")}
           </Link>
         </p>
       </form>

@@ -76,7 +76,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+        <Route path="/auth/oauth2/redirect" element={<OAuth2RedirectHandler />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

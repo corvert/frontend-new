@@ -6,11 +6,14 @@ import { Divider } from "@mui/material";
 import InputField from "../InputField/InputField";
 import toast from "react-hot-toast";
 import Buttons from "../../utils/Buttons";
+import { useTranslation } from "react-i18next";
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
+    watch,
     reset,
     formState: { errors },
   } = useForm({
@@ -39,10 +42,10 @@ const ResetPassword = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-      toast.success("Password reset successful! You can now log in.");
+      toast.success(t("toast.resetSuccess"));
       reset();
     } catch (error) {
-      toast.error("Error resetting password. Please try again.");
+      toast.error(t("toast.resetError"));
     } finally {
       setLoading(false);
     }
@@ -52,30 +55,39 @@ const ResetPassword = () => {
     <div className="min-h-[calc(100vh-74px)] flex justify-center items-center">
       <form
         onSubmit={handleSubmit(handleResetPassword)}
-        className="sm:w-[450px] w-[360px]  shadow-custom py-8 sm:px-8 px-4"
+        className="sm:w-112.5 w-90  shadow-custom py-8 sm:px-8 px-4"
       >
         <div>
-          <h1 className="font-montserrat text-center font-bold text-2xl">
-            Update Your Password
-          </h1>
-          <p className="text-slate-600 text-center">
-            Enter your new Password to Update it
-          </p>
+          <h1 className="font-montserrat text-center font-bold text-2xl">{t("auth.resetTitle")}</h1>
+          <p className="text-slate-600 text-center">{t("auth.resetDescription")}</p>
         </div>
         <Divider className="font-semibold pb-4"></Divider>
 
         <div className="flex flex-col gap-2 mt-4">
           <InputField
-            label="Password"
+            label={t("auth.password")}
             required
             id="password"
             type="password"
-            message="*Password is required"
-            placeholder="enter your Password"
+            message={t("auth.passwordRequired")}
+            placeholder={t("auth.resetPasswordPlaceholder")}
             register={register}
             errors={errors}
             min={6}
-          />{" "}
+          />
+           <InputField
+                  label="Confirm Password"
+                  required
+                  id="confirmPassword"
+                  className="w-full"
+                  type="password"
+                  message="*Confirm Password is required"
+                  placeholder={t("auth.confirmPasswordPlaceholder")}
+                  register={register }
+                  errors={errors}
+                  min={6}
+                  validate={(value) => value === watch("password") || "Passwords do not match"}
+                />{" "}
         </div>
         <Buttons
           disabled={loading}
@@ -83,11 +95,11 @@ const ResetPassword = () => {
           className="bg-customRed font-semibold text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
           type="text"
         >
-          {loading ? <span>Loading...</span> : "Submit"}
+          {loading ? <span>{t("auth.loading")}</span> : t("auth.submit")}
         </Buttons>
         <p className=" text-sm text-slate-700 ">
           <Link className=" underline hover:text-black" to="/login">
-            Back To Login
+            {t("auth.backLogin")}
           </Link>
         </p>
       </form>

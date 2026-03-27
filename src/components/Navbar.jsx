@@ -3,12 +3,14 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IoMenu } from "react-icons/io5";
 import { RxCross2 } from "react-icons/rx";
 import { useMyContext } from "../store/ContextApi";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   //handle the header opening and closing menu for the tablet/mobile device
   const [headerToggle, setHeaderToggle] = useState(false);
   const pathName = useLocation().pathname;
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   // Access the states by using the useMyContext hook from the ContextProvider
   const { token, setToken, setCurrentUser, isAdmin, setIsAdmin } = useMyContext();
@@ -21,6 +23,12 @@ const Navbar = () => {
     setCurrentUser(null);
     setIsAdmin(false);
     navigate("/login");
+  };
+
+  const activeLanguage = i18n.resolvedLanguage?.startsWith("et") ? "et" : "en";
+
+  const changeLanguage = (lang) => {
+    i18n.changeLanguage(lang);
   };
 
   return (
@@ -45,7 +53,7 @@ const Navbar = () => {
                     pathName === "/notes" ? "font-semibold " : ""
                   } py-2 cursor-pointer  hover:text-slate-300 `}
                 >
-                  My Notes
+                  {t("nav.myNotes")}
                 </li>
               </Link>
               <Link to="/create-note">
@@ -54,7 +62,7 @@ const Navbar = () => {
                     pathName === "/create-note" ? "font-semibold " : ""
                   } `}
                 >
-                  Create Note
+                  {t("nav.createNote")}
                 </li>
               </Link>
             </>
@@ -66,7 +74,7 @@ const Navbar = () => {
                 pathName === "/contact" ? "font-semibold " : ""
               } py-2 cursor-pointer hover:text-slate-300`}
             >
-              Contact
+              {t("nav.contact")}
             </li>
           </Link>
 
@@ -76,7 +84,7 @@ const Navbar = () => {
                 pathName === "/about" ? "font-semibold " : ""
               }`}
             >
-              About
+              {t("nav.about")}
             </li>
           </Link>
 
@@ -88,7 +96,7 @@ const Navbar = () => {
                     pathName === "/profile" ? "font-semibold " : ""
                   }`}
                 >
-                  Profile
+                  {t("nav.profile")}
                 </li>
               </Link>{" "}
               {isAdmin && (
@@ -98,7 +106,7 @@ const Navbar = () => {
                       pathName.startsWith("/admin") ? "font-semibold " : ""
                     }`}
                   >
-                    Admin
+                    {t("nav.admin")}
                   </li>
                 </Link>
               )}
@@ -106,16 +114,36 @@ const Navbar = () => {
                 onClick={handleLogout}
                 className="w-24 text-center bg-customRed font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300"
               >
-                LogOut
+                {t("nav.logout")}
               </button>
             </>
           ) : (
             <Link to="/signup">
               <li className="w-24 text-center bg-btnColor font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300">
-                SignUp
+                {t("nav.signup")}
               </li>
             </Link>
           )}
+          <li className="py-2 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => changeLanguage("en")}
+              className={`px-2 py-1 rounded-sm border ${
+                activeLanguage === "en" ? "bg-white text-headerColor" : "text-white"
+              }`}
+            >
+              {t("lang.en")}
+            </button>
+            <button
+              type="button"
+              onClick={() => changeLanguage("et")}
+              className={`px-2 py-1 rounded-sm border ${
+                activeLanguage === "et" ? "bg-white text-headerColor" : "text-white"
+              }`}
+            >
+              {t("lang.et")}
+            </button>
+          </li>
         </ul>
         <span
           onClick={() => setHeaderToggle(!headerToggle)}

@@ -1,0 +1,102 @@
+{
+  "lang": {
+    "en": "EN",
+    "et": "EE"
+  },
+  "nav": {
+    "myNotes": "My Notes",
+    "createNote": "Create Note",
+    "contact": "Contact",
+    "about": "About",
+    "profile": "Profile",
+    "admin": "Admin",
+    "logout": "Log Out",
+    "signup": "Sign Up"
+  },
+  "footer": {
+    "aboutUs": "About Us",
+    "services": "Services",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "rights": "All rights reserved."
+  },
+  "landing": {
+    "title": "Turn your thoughts into secure, organized notes and faster.",
+    "subtitle": "The #1 secure note-taking app.",
+    "description": "Manage your notes effortlessly and securely. Just type, save, and access them from anywhere with robust encryption and seamless synchronization.",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "brandsTitle": "More reasons companies around the world choose us",
+    "testimonial": "Testimonial"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "We would love to hear from you! If you have any questions or feedback, feel free to reach out to us.",
+    "name": "Name",
+    "email": "Email",
+    "message": "Message",
+    "send": "Send Message"
+  },
+  "about": {
+    "title": "About Us",
+    "intro": "Welcome to SecureNote, your trusted companion for secure and private note-taking. We believe in providing a safe space where your thoughts and ideas are protected with the highest level of security. Our mission is to ensure that your notes are always accessible to you and only you. With state-of-the-art encryption and user-friendly features, SecureNote is designed to keep your information confidential and secure.",
+    "point1": "Add an extra layer of security with two-factor authentication.",
+    "point2": "Your notes are encrypted from the moment you create them.",
+    "point3": "Access your notes from anywhere with the assurance that they are securely stored.",
+    "point4": "Our app is designed to be intuitive and easy to use."
+  },
+  "notFound": {
+    "title": "Something is missing.",
+    "description": "Sorry, we cannot find that page. You will find lots to explore on the home page.",
+    "backHome": "Back to Homepage"
+  },
+  "auth": {
+    "or": "OR",
+    "loginHere": "Login Here",
+    "loginDescription": "Please enter your username and password",
+    "loginGoogle": "Login with Google",
+    "loginGithub": "Login with GitHub",
+    "username": "User Name",
+    "usernameRequired": "*User name is required",
+    "usernamePlaceholder": "Type your username",
+    "password": "Password",
+    "passwordRequired": "*Password is required",
+    "passwordPlaceholder": "Type your password",
+    "loading": "Loading...",
+    "login": "Log In",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Do not have an account?",
+    "verify2fa": "Verify 2FA",
+    "verify2faDescription": "Enter the correct code to complete 2FA authentication",
+    "enterCode": "Enter Code",
+    "codeRequired": "*Code is required",
+    "codePlaceholder": "Enter your 2FA code",
+    "verify2faButton": "Verify 2FA",
+    "registerTitle": "Register Here",
+    "registerDescription": "Enter your credentials to create a new account",
+    "email": "Email",
+    "emailRequired": "*Email is required",
+    "emailPlaceholder": "Type your email",
+    "register": "Register",
+    "hasAccount": "Already have an account?",
+    "forgotTitle": "Forgot Password?",
+    "forgotDescription": "Enter your email and a password reset email will be sent",
+    "send": "Send",
+    "backLogin": "Back To Login",
+    "resetTitle": "Update Your Password",
+    "resetDescription": "Enter your new password to update it",
+    "submit": "Submit",
+    "resetPasswordPlaceholder": "Enter your password"
+  },
+  "toast": {
+    "loginSuccess": "Login successful",
+    "loginFailed": "Login failed. Please check your credentials and try again.",
+    "invalidCredentials": "Invalid credentials",
+    "invalid2fa": "Invalid 2FA code. Please try again.",
+    "registerSuccess": "Register successful",
+    "forgotSent": "Password reset email sent. Check your inbox.",
+    "forgotError": "Error sending password reset email. Please try again.",
+    "resetSuccess": "Password reset successful! You can now log in.",
+    "resetError": "Error resetting password. Please try again."
+  }
+}
