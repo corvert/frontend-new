@@ -86,7 +86,7 @@ const UserProfile = () => {
       setQrCodeUrl(response.data);
       setStep(2);
     } catch (error) {
-      toast.error("Error enabling 2FA");
+      toast.error("Error enabling 2FA", error?.response?.data?.message);
     } finally {
       setDisbledLoader(false);
     }
@@ -101,7 +101,7 @@ const UserProfile = () => {
       setIs2faEnabled(false);
       setQrCodeUrl("");
     } catch (error) {
-      toast.error("Error disabling 2FA");
+      toast.error("Error disabling 2FA", error?.response?.data?.message);
     } finally {
       setDisbledLoader(false);
     }
@@ -155,7 +155,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Credential successful");
     } catch (error) {
-      toast.error("Update Credential failed");
+      toast.error("Update Credential failed", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -185,7 +185,7 @@ const UserProfile = () => {
 
       const lastLoginSession = moment
         .unix(decodedToken.iat)
-        .format("dddd, D MMMM YYYY, h:mm A");
+        .format("dddd, DD.MM.YYYY, HH:mm");
       //set the loggin session from the token
       setLoginSession(lastLoginSession);
     }
@@ -209,7 +209,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Account Expirey Status");
     } catch (error) {
-      toast.error("Update expirey status failed");
+      toast.error("Update expirey status failed", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -233,7 +233,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Account Lock Status");
     } catch (error) {
-      toast.error("Update Account Lock status failed");
+      toast.error("Update Account Lock status failed", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -256,7 +256,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Account Enabled Status");
     } catch (error) {
-      toast.error("Update Account Enabled status failed");
+      toast.error("Update Account Enabled status failed", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -279,7 +279,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Credentials Expiry Status");
     } catch (error) {
-      toast.error("Credentials Expiry Status Failed");
+      toast.error("Credentials Expiry Status Failed", error?.response?.data?.message );
     } finally {
       setLoading(false);
     }

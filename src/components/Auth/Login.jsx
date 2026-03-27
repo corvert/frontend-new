@@ -143,7 +143,7 @@ const Login = () => {
                     {t("auth.loginGoogle")}
                   </span>
                 </Link>
-                <Link
+                {/* <Link
                   to={`${apiUrl}/oauth2/authorization/github`}
                   className="flex gap-1 items-center justify-center flex-1 border p-2 shadow-sm shadow-slate-200 rounded-md hover:bg-slate-300 transition-all duration-300"
                 >
@@ -153,7 +153,7 @@ const Login = () => {
                   <span className="font-semibold sm:text-customText text-xs">
                     {t("auth.loginGithub")}
                   </span>
-                </Link>
+                </Link> */}
               </div>
 
               <Divider className="font-semibold">{t("auth.or")}</Divider>
