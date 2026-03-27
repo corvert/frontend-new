@@ -58,7 +58,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        
+
         <Route path="/access-denied" element={<AccessDenied />} />
         <Route
           path="/admin/*"
