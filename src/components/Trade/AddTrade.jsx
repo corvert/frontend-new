@@ -85,6 +85,15 @@ const AddTrade = () => {
         fee: form.fee ? form.fee : null,
         note: form.note?.trim() || null,
       });
+      try {
+        await api.post(`/assets/${Number(form.assetId)}/prices`, {
+          priceDate: form.executedAt,
+          price: form.price,
+        });
+      } catch (e) {
+        console.error(e);
+        toast.error(t("trade.priceUpsertFailed"));
+      }
 
       toast.success(t("trade.created"));
       navigate("/portfolio");
@@ -227,7 +236,11 @@ const AddTrade = () => {
           <button type="submit" className="bg-btnColor text-white px-4 py-2 rounded font-semibold">
             {t("trade.submit")}
           </button>
-          <button type="button" onClick={() => navigate("/portfolio")} className="px-4 py-2 border rounded">
+          <button
+            type="button"
+            onClick={() => navigate("/portfolio")}
+            className="px-4 py-2 border rounded"
+          >
             {t("trade.cancel")}
           </button>
         </div>

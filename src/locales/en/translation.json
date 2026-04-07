@@ -13,7 +13,7 @@
     "logout": "Log Out",
     "signup": "Sign Up",
     "portfolio": "Portfolio",
-     "cash": "Cash"
+    "cash": "Cash"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -184,7 +184,7 @@
     "typeFee": "Fee",
     "typeDividend": "Dividend",
     "typeInterest": "Interest",
-     "overviewTitle": "Cash",
+    "overviewTitle": "Cash",
     "overviewSubtitle": "Balances and cash transactions for the selected account.",
     "loadFailed": "Failed to load cash data",
 
@@ -198,10 +198,8 @@
 
     "transactionsTitle": "Cash transactions",
     "noTransactions": "No transactions."
-
-   
   },
-   "trade": {
+  "trade": {
     "title": "Add trade",
     "loading": "Loading...",
     "add": "Make a trade",
@@ -226,7 +224,8 @@
     "quantityRequired": "Please enter quantity",
     "priceRequired": "Please enter price",
     "dateRequired": "Please select date",
-    "noAssetsHint": "No assets yet. Create one first."
+    "noAssetsHint": "No assets yet. Create one first.",
+    "priceUpsertFailed": "Trade saved, but failed to save price history for this asset."
   },
   "asset": {
     "title": "Add asset",
