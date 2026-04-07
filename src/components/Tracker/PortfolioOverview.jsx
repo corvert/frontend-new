@@ -141,7 +141,7 @@ const PortfolioOverview = () => {
     if (selectedAccountId === "ALL" && (!accounts || accounts.length === 0)) return;
 
     loadPortfolio(selectedAccountId, asOf);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId, asOf, accounts]);
 
   const sortedPositions = useMemo(() => {
@@ -303,15 +303,21 @@ const PortfolioOverview = () => {
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.cash")}</div>
-                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.cashTotal * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(portfolio.baseTotals.cashTotal * 100) / 100)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.positions")}</div>
-                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.positionsTotal * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(portfolio.baseTotals.positionsTotal * 100) / 100)}
+                  </div>
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.total")}</div>
-                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.portfolioTotal * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(portfolio.baseTotals.portfolioTotal * 100) / 100)}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -360,9 +366,11 @@ const PortfolioOverview = () => {
                 <tbody>
                   {(portfolio.cashBalances || []).map((b) => (
                     <tr key={b.currency} className="border-t">
-                        <Link to="/cash">
-                          <td className="p-3">{b.currency}</td>
+                      <td className="p-3">
+                        <Link to="/cash" className="underline">
+                          {b.currency}
                         </Link>
+                      </td>
                       <td className="p-3 font-mono">{String(Math.round(b.balance * 100) / 100)}</td>
                     </tr>
                   ))}
@@ -380,8 +388,24 @@ const PortfolioOverview = () => {
           </div>
 
           {/* Positions table */}
-          <div className="border rounded overflow-hidden">
-            <div className="p-4 font-semibold border-b">{t("tracker.assetsTitle")}</div>
+          <div className="border rounded overflow-hidden mb-6">
+            <div className="p-4 font-semibold border-b flex justify-between items-center">
+              {t("tracker.assetsTitle")}
+              {t("tracker.tradesTitle")}
+              <button
+                type="button"
+                onClick={() => {
+                  const q =
+                    selectedAccountId && selectedAccountId !== "ALL"
+                      ? `?accountId=${encodeURIComponent(selectedAccountId)}`
+                      : "";
+                  navigate(`/trades/new${q}`);
+                }}
+                className="px-4 py-2 bg-btnColor text-white rounded font-semibold"
+              >
+                {t("trade.add")}
+              </button>
+            </div>
 
             <div className="overflow-auto">
               <table className="min-w-full text-sm">
@@ -401,9 +425,13 @@ const PortfolioOverview = () => {
                       <td className="p-3 font-mono">{p.assetSymbol}</td>
                       <td className="p-3">{p.assetName}</td>
                       <td className="p-3">{p.currency}</td>
-                      <td className="p-3 font-mono">{String(Math.round(p.quantity * 100) / 100)}</td>
                       <td className="p-3 font-mono">
-                        {p.lastPrice == null ? t("tracker.na") : String(Math.round(p.lastPrice * 100) / 100)}
+                        {String(Math.round(p.quantity * 100) / 100)}
+                      </td>
+                      <td className="p-3 font-mono">
+                        {p.lastPrice == null
+                          ? t("tracker.na")
+                          : String(Math.round(p.lastPrice * 100) / 100)}
                       </td>
                       <td className="p-3 font-mono">
                         {p.marketValue == null ? t("tracker.na") : String(p.marketValue)}
@@ -441,9 +469,15 @@ const PortfolioOverview = () => {
                   {(portfolio.totals || []).map((tRow) => (
                     <tr key={tRow.currency} className="border-t">
                       <td className="p-3">{tRow.currency}</td>
-                      <td className="p-3 font-mono">{String(Math.round(tRow.cashTotal * 100) / 100)}</td>
-                      <td className="p-3 font-mono">{String(Math.round(tRow.positionsTotal * 100) / 100)}</td>
-                      <td className="p-3 font-mono">{String(Math.round(tRow.portfolioTotal * 100) / 100)}</td>
+                      <td className="p-3 font-mono">
+                        {String(Math.round(tRow.cashTotal * 100) / 100)}
+                      </td>
+                      <td className="p-3 font-mono">
+                        {String(Math.round(tRow.positionsTotal * 100) / 100)}
+                      </td>
+                      <td className="p-3 font-mono">
+                        {String(Math.round(tRow.portfolioTotal * 100) / 100)}
+                      </td>
                     </tr>
                   ))}
 

@@ -22,6 +22,8 @@ import Footer from "./components/Footer/Footer";
 import PortfolioOverview from "./components/Tracker/PortfolioOverview";
 import AddCashTransaction from "./components/Tracker/AddCashTransaction";
 import CashOverview from "./components/Cash/CashOverview";
+import AddTrade from "./components/Trade/AddTrade";
+import AddAsset from "./components/Asset/AddAsset";
 
 const App = () => {
   return (
@@ -100,6 +102,23 @@ const App = () => {
           element={
             <ProtectedRoute>
               <CashOverview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/trades/new"
+          element={
+            <ProtectedRoute>
+              <AddTrade />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/assets/new"
+          element={
+            <ProtectedRoute>
+              <AddAsset />
             </ProtectedRoute>
           }
         />

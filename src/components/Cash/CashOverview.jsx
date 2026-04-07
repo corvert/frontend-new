@@ -44,15 +44,22 @@ const CashOverview = () => {
     return res.data || [];
   };
 
-  const loadTransactions = async (accountId, fromDate, toDate) => {
-    const params = new URLSearchParams();
-    params.set("accountId", String(accountId));
-    if (fromDate) params.set("from", fromDate);
-    if (toDate) params.set("to", toDate);
+const loadTransactions = async (accountId, fromDate, toDate) => {
+  const params = new URLSearchParams();
+  params.set("accountId", String(accountId));
+  if (fromDate) params.set("from", fromDate);
+  if (toDate) params.set("to", toDate);
 
-    const res = await api.get(`/cash-transactions?${params.toString()}`);
-    return res.data || [];
-  };
+  const qs = params.toString();
+  console.log("[CashOverview] GET /cash-transactions?" + qs, {
+    accountId,
+    fromDate,
+    toDate,
+  });
+
+  const res = await api.get(`/cash-transactions?${qs}`);
+  return res.data || [];
+};
 
   const refresh = async () => {
     if (!selectedAccountId) return;

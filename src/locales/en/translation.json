@@ -155,7 +155,9 @@
     "ecbImportStarted": "ECB import completed",
     "ecbImportFailed": "ECB import failed",
     "allAccounts": "All accounts",
-    "balance": "Balance"
+    "balance": "Balance",
+    "tradesTitle": "Trades",
+    "tradesHint": "Create a trade to add positions to your portfolio."
   },
   "cash": {
     "title": "Add cash transaction",
@@ -198,5 +200,51 @@
     "noTransactions": "No transactions."
 
    
+  },
+   "trade": {
+    "title": "Add trade",
+    "loading": "Loading...",
+    "add": "Make a trade",
+    "loadFailed": "Failed to load trade data",
+    "created": "Trade saved",
+    "createFailed": "Failed to save trade",
+    "account": "Account",
+    "asset": "Asset",
+    "side": "Side",
+    "side_BUY": "Buy",
+    "side_SELL": "Sell",
+    "quantity": "Quantity",
+    "price": "Price",
+    "fee": "Fee",
+    "date": "Date",
+    "note": "Note",
+    "notePlaceholder": "Optional note",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "accountRequired": "Please select an account",
+    "assetRequired": "Please select an asset",
+    "quantityRequired": "Please enter quantity",
+    "priceRequired": "Please enter price",
+    "dateRequired": "Please select date",
+    "noAssetsHint": "No assets yet. Create one first."
+  },
+  "asset": {
+    "title": "Add asset",
+    "created": "Asset created",
+    "createFailed": "Failed to create asset",
+    "createInline": "Create new asset",
+    "type": "Type",
+    "type_STOCK": "Stock",
+    "type_P2P": "P2P",
+    "type_ETF": "ETF",
+    "type_BOND": "Bond",
+    "name": "Name",
+    "namePlaceholder": "e.g. Apple Inc.",
+    "nameRequired": "Please enter a name",
+    "symbol": "Symbol",
+    "isin": "ISIN",
+    "currency": "Currency",
+    "submit": "Save",
+    "cancel": "Cancel"
   }
 }
