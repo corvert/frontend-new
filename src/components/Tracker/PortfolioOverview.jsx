@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -261,7 +261,7 @@ const PortfolioOverview = () => {
             <option value="ALL">{t("tracker.allAccounts")}</option>
             {accounts.map((a) => (
               <option key={a.id} value={String(a.id)}>
-                {a.name ?? t("tracker.accountFallback", { id: a.id })}
+                {a.accountName ?? t("tracker.accountFallback", { id: a.id })}
               </option>
             ))}
           </select>
@@ -360,7 +360,9 @@ const PortfolioOverview = () => {
                 <tbody>
                   {(portfolio.cashBalances || []).map((b) => (
                     <tr key={b.currency} className="border-t">
-                      <td className="p-3">{b.currency}</td>
+                        <Link to="/cash">
+                          <td className="p-3">{b.currency}</td>
+                        </Link>
                       <td className="p-3 font-mono">{String(Math.round(b.balance * 100) / 100)}</td>
                     </tr>
                   ))}

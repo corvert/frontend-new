@@ -58,6 +58,13 @@ const Navbar = () => {
                       {t("nav.portfolio")}
                     </li>
                   </Link>
+                  <Link to="/cash">
+                    <li
+                      className={` ${pathName === "/cash" ? "font-semibold " : ""} py-2 cursor-pointer  hover:text-slate-300 `}
+                    >
+                      {t("nav.cash")}
+                    </li>
+                  </Link>
 
             
                

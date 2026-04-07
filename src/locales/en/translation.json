@@ -12,7 +12,8 @@
     "admin": "Admin",
     "logout": "Log Out",
     "signup": "Sign Up",
-    "portfolio": "Portfolio"
+    "portfolio": "Portfolio",
+     "cash": "Cash"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -174,6 +175,28 @@
     "accountRequired": "Please select an account",
     "currencyRequired": "Please enter currency",
     "amountRequired": "Please enter amount",
-    "dateRequired": "Please select date"
+    "dateRequired": "Please select date",
+    "typeDeposit": "Deposit",
+    "typeWithdraw": "Withdrawal",
+    "typeTrade": "Trade",
+    "typeFee": "Fee",
+    "typeDividend": "Dividend",
+    "typeInterest": "Interest",
+     "overviewTitle": "Cash",
+    "overviewSubtitle": "Balances and cash transactions for the selected account.",
+    "loadFailed": "Failed to load cash data",
+
+    "filters": "Filters",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply",
+
+    "balancesTitle": "Cash balances",
+    "noBalances": "No balances.",
+
+    "transactionsTitle": "Cash transactions",
+    "noTransactions": "No transactions."
+
+   
   }
 }

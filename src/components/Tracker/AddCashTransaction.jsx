@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 
-const CASH_TYPES = ["DEPOSIT", "WITHDRAW", "FEE", "INTEREST", "DIVIDEND"]; // adjust to your enum values
+const CASH_TYPES = ["DEPOSIT", "WITHDRAW", "TRADE", "FEE", "DIVIDEND", "INTEREST"];
 
 const AddCashTransaction = () => {
   const { t } = useTranslation();
@@ -13,6 +13,14 @@ const AddCashTransaction = () => {
 
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const cashTypeLabelKey = {
+    DEPOSIT: "cash.typeDeposit",
+    WITHDRAW: "cash.typeWithdraw",
+    TRADE: "cash.typeTrade",
+    FEE: "cash.typeFee",
+    DIVIDEND: "cash.typeDividend",
+    INTEREST: "cash.typeInterest",
+  };
 
   const params = new URLSearchParams(location.search);
   const accountIdFromQuery = params.get("accountId") || "";
@@ -22,7 +30,7 @@ const AddCashTransaction = () => {
     type: "DEPOSIT",
     currency: "EUR",
     amount: "",
-    executedAt: new Date().toISOString().slice(0, 10), 
+    executedAt: new Date().toISOString().slice(0, 10),
     note: "",
   });
 
@@ -65,7 +73,7 @@ const AddCashTransaction = () => {
         accountId: Number(form.accountId),
         type: form.type,
         currency: form.currency.trim().toUpperCase(),
-        amount: form.amount, 
+        amount: form.amount,
         executedAt: form.executedAt,
         note: form.note?.trim() || null,
       });
@@ -103,7 +111,7 @@ const AddCashTransaction = () => {
           >
             {accounts.map((a) => (
               <option key={a.id} value={String(a.id)}>
-                {a.name ?? t("tracker.accountFallback", { id: a.id })}
+                {a.accountName ?? t("tracker.accountFallback", { id: a.id })}
               </option>
             ))}
           </select>
@@ -119,7 +127,7 @@ const AddCashTransaction = () => {
             >
               {CASH_TYPES.map((ct) => (
                 <option key={ct} value={ct}>
-                  {ct}
+                  {t(cashTypeLabelKey[ct])}
                 </option>
               ))}
             </select>
@@ -171,10 +179,7 @@ const AddCashTransaction = () => {
         </div>
 
         <div className="flex gap-2 pt-2">
-          <button
-            type="submit"
-            className="bg-btnColor text-white px-4 py-2 rounded font-semibold"
-          >
+          <button type="submit" className="bg-btnColor text-white px-4 py-2 rounded font-semibold">
             {t("cash.submit")}
           </button>
           <button

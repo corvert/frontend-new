@@ -21,7 +21,7 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import Footer from "./components/Footer/Footer";
 import PortfolioOverview from "./components/Tracker/PortfolioOverview";
 import AddCashTransaction from "./components/Tracker/AddCashTransaction";
-
+import CashOverview from "./components/Cash/CashOverview";
 
 const App = () => {
   return (
@@ -92,6 +92,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AddCashTransaction />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cash"
+          element={
+            <ProtectedRoute>
+              <CashOverview />
             </ProtectedRoute>
           }
         />
