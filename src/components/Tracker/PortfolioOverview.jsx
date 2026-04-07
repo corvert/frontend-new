@@ -2,17 +2,21 @@ import React, { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useMyContext } from "../../store/ContextApi";
+
 
 const PortfolioOverview = () => {
   const { t } = useTranslation();
 
   const [accounts, setAccounts] = useState([]);
-  const [selectedAccountId, setSelectedAccountId] = useState("");
+  const [selectedAccountId, setSelectedAccountId] = useState("ALL");
   const [portfolio, setPortfolio] = useState(null);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [loadingPortfolio, setLoadingPortfolio] = useState(false);
   const [accountKind, setAccountKind] = useState("BROKER");
   const [tradingMode, setTradingMode] = useState("CASH");
+  const [asOf, setAsOf] = useState("");
+  const { isAdmin } = useMyContext();
 
   const [newAccountName, setNewAccountName] = useState("");
 
@@ -24,7 +28,7 @@ const PortfolioOverview = () => {
       setAccounts(list);
 
       if (list.length > 0) {
-        setSelectedAccountId(String(list[0].id));
+          setSelectedAccountId("ALL");
       } else {
         setSelectedAccountId("");
         setPortfolio(null);
@@ -37,30 +41,102 @@ const PortfolioOverview = () => {
     }
   };
 
-  const loadPortfolio = async (accountId) => {
-    if (!accountId) return;
-    setLoadingPortfolio(true);
-    try {
-      const res = await api.get(`/accounts/${accountId}/portfolio`);
-      setPortfolio(res.data);
-    } catch (e) {
-      console.error(e);
-      toast.error(t("tracker.portfolioLoadFailed"));
-    } finally {
-      setLoadingPortfolio(false);
+const loadPortfolio = async (accountIdOrAll, asOfDate) => {
+  if (!accountIdOrAll) return;
+
+  setLoadingPortfolio(true);
+  try {
+    const qs = asOfDate ? `?asOf=${encodeURIComponent(asOfDate)}` : "";
+
+    // ALL accounts
+    if (accountIdOrAll === "ALL") {
+      const ids = (accounts || []).map((a) => a.id);
+
+      const results = await Promise.all(
+        ids.map((id) =>
+          api.get(`/accounts/${id}/portfolio${qs}`).then((r) => r.data),
+        ),
+      );
+
+      // positions: keep as separate rows (MVP)
+      const positions = results.flatMap((p) => p.positions || []);
+
+      // cashBalances: sum by currency
+      const cashMap = new Map(); // currency -> amount
+      for (const p of results) {
+        for (const b of p.cashBalances || []) {
+          const cur = b.currency;
+          const amt = Number(b.amount ?? 0);
+          cashMap.set(cur, Number(cashMap.get(cur) ?? 0) + amt);
+        }
+      }
+      const cashBalances = Array.from(cashMap.entries()).map(([currency, amount]) => ({
+        currency,
+        amount,
+      }));
+
+      // totals by currency: sum by currency
+      const totalsMap = new Map(); // currency -> totals row
+      for (const p of results) {
+        for (const row of p.totals || []) {
+          const cur = row.currency;
+          const prev = totalsMap.get(cur) || {
+            currency: cur,
+            cashTotal: 0,
+            positionsTotal: 0,
+            portfolioTotal: 0,
+          };
+          totalsMap.set(cur, {
+            currency: cur,
+            cashTotal: Number(prev.cashTotal) + Number(row.cashTotal ?? 0),
+            positionsTotal: Number(prev.positionsTotal) + Number(row.positionsTotal ?? 0),
+            portfolioTotal: Number(prev.portfolioTotal) + Number(row.portfolioTotal ?? 0),
+          });
+        }
+      }
+      const totals = Array.from(totalsMap.values());
+
+      // baseTotals: sum only if all complete
+      const allComplete = results.every((p) => p.baseTotals?.complete);
+      const baseCurrency =
+        results.find((p) => p.baseTotals?.baseCurrency)?.baseTotals?.baseCurrency || "EUR";
+
+      const baseTotals = allComplete
+        ? {
+            complete: true,
+            baseCurrency,
+            cashTotal: results.reduce((s, p) => s + Number(p.baseTotals?.cashTotal ?? 0), 0),
+            positionsTotal: results.reduce((s, p) => s + Number(p.baseTotals?.positionsTotal ?? 0), 0),
+            portfolioTotal: results.reduce((s, p) => s + Number(p.baseTotals?.portfolioTotal ?? 0), 0),
+          }
+        : { complete: false, baseCurrency };
+
+      setPortfolio({ positions, cashBalances, totals, baseTotals });
+      return;
     }
-  };
+
+    // single account
+    const res = await api.get(`/accounts/${accountIdOrAll}/portfolio${qs}`);
+    setPortfolio(res.data);
+  } catch (e) {
+    console.error(e);
+    toast.error(t("tracker.portfolioLoadFailed"));
+  } finally {
+    setLoadingPortfolio(false);
+  }
+};
 
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (selectedAccountId) {
-      loadPortfolio(selectedAccountId);
-    }
-  }, [selectedAccountId]);
+ useEffect(() => {
+  if (!selectedAccountId) return;
+  if (selectedAccountId === "ALL" && (!accounts || accounts.length === 0)) return;
+
+  loadPortfolio(selectedAccountId, asOf);
+}, [selectedAccountId, asOf, accounts]);
 
   const sortedPositions = useMemo(() => {
     const positions = portfolio?.positions || [];
@@ -92,6 +168,19 @@ const PortfolioOverview = () => {
     } catch (err) {
       console.error(err);
       toast.error(err?.response?.data?.message || t("tracker.accountCreateFailed"));
+    }
+  };
+
+  const onImportEcbNow = async () => {
+    try {
+      await api.post("/fx-rates/import/ecb");
+      toast.success(t("tracker.ecbImportStarted"));
+      if (selectedAccountId) {
+        loadPortfolio(selectedAccountId, asOf);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error(e?.response?.data?.message || t("tracker.ecbImportFailed"));
     }
   };
 
@@ -164,12 +253,33 @@ const PortfolioOverview = () => {
             onChange={(e) => setSelectedAccountId(e.target.value)}
             className="border rounded px-3 py-2"
           >
+            <option value="ALL">{t("tracker.allAccounts")}</option>
             {accounts.map((a) => (
+                
               <option key={a.id} value={String(a.id)}>
                 {a.name ?? t("tracker.accountFallback", { id: a.id })}
               </option>
+              
             ))}
           </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-slate-600">{t("tracker.asOf")}</label>
+          <input
+            type="date"
+            value={asOf}
+            onChange={(e) => setAsOf(e.target.value)}
+            className="border rounded px-3 py-2"
+          />
+          {asOf && (
+            <button
+              type="button"
+              onClick={() => setAsOf("")}
+              className="px-3 py-2 border rounded hover:bg-slate-50"
+            >
+              {t("tracker.clear")}
+            </button>
+          )}
         </div>
       </div>
 
@@ -202,8 +312,51 @@ const PortfolioOverview = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-slate-600">{t("tracker.fxMissing")}</div>
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm text-slate-600">{t("tracker.fxMissing")}</div>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={onImportEcbNow}
+                    className="px-3 py-2 border rounded hover:bg-slate-50"
+                  >
+                    {t("tracker.importEcbNow")}
+                  </button>
+                )}
+              </div>
             )}
+          </div>
+
+          {/* Cash balances */}
+          <div className="border rounded overflow-hidden mb-6">
+            <div className="p-4 font-semibold border-b">{t("tracker.cashBalancesTitle")}</div>
+
+            <div className="overflow-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-slate-50">
+                  <tr className="text-left">
+                    <th className="p-3">{t("tracker.currency")}</th>
+                    <th className="p-3">{t("tracker.amount")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(portfolio.cashBalances || []).map((b) => (
+                    <tr key={b.currency} className="border-t">
+                      <td className="p-3">{b.currency}</td>
+                      <td className="p-3 font-mono">{String(b.amount)}</td>
+                    </tr>
+                  ))}
+
+                  {(portfolio.cashBalances || []).length === 0 && (
+                    <tr className="border-t">
+                      <td className="p-3 text-slate-600" colSpan={2}>
+                        {t("tracker.noCashBalances")}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Positions table */}

@@ -12,7 +12,7 @@
     "admin": "Admin",
     "logout": "Log Out",
     "signup": "Sign Up",
-     "portfolio": "Portfolio"
+    "portfolio": "Portfolio"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -101,7 +101,6 @@
     "resetError": "Error resetting password. Please try again."
   },
 
-
   "tracker": {
     "portfolioTitle": "Portfolio",
     "loadingAccounts": "Loading accounts...",
@@ -145,7 +144,15 @@
     "noPositions": "No positions.",
 
     "totalsByCurrencyTitle": "Totals by currency",
-    "noTotals": "No totals."
+    "noTotals": "No totals.",
+    "cashBalancesTitle": "Cash balances",
+    "amount": "Amount",
+    "noCashBalances": "No cash balances.",
+    "asOf": "As of",
+    "clear": "Clear",
+    "importEcbNow": "Import ECB now",
+    "ecbImportStarted": "ECB import completed",
+    "ecbImportFailed": "ECB import failed",
+    "allAccounts": "All accounts"
   }
 }
-
