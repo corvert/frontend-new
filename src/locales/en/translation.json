@@ -153,6 +153,27 @@
     "importEcbNow": "Import ECB now",
     "ecbImportStarted": "ECB import completed",
     "ecbImportFailed": "ECB import failed",
-    "allAccounts": "All accounts"
+    "allAccounts": "All accounts",
+    "balance": "Balance"
+  },
+  "cash": {
+    "title": "Add cash transaction",
+    "loading": "Loading...",
+    "add": "Make a cash transaction",
+    "account": "Account",
+    "type": "Type",
+    "date": "Date",
+    "currency": "Currency",
+    "amount": "Amount",
+    "note": "Note",
+    "notePlaceholder": "Optional note",
+    "submit": "Save",
+    "cancel": "Cancel",
+    "created": "Cash transaction saved",
+    "createFailed": "Failed to save cash transaction",
+    "accountRequired": "Please select an account",
+    "currencyRequired": "Please enter currency",
+    "amountRequired": "Please enter amount",
+    "dateRequired": "Please select date"
   }
 }

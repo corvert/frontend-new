@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMyContext } from "../../store/ContextApi";
-
 
 const PortfolioOverview = () => {
   const { t } = useTranslation();
@@ -17,6 +17,7 @@ const PortfolioOverview = () => {
   const [tradingMode, setTradingMode] = useState("CASH");
   const [asOf, setAsOf] = useState("");
   const { isAdmin } = useMyContext();
+  const navigate = useNavigate();
 
   const [newAccountName, setNewAccountName] = useState("");
 
@@ -28,7 +29,7 @@ const PortfolioOverview = () => {
       setAccounts(list);
 
       if (list.length > 0) {
-          setSelectedAccountId("ALL");
+        setSelectedAccountId("ALL");
       } else {
         setSelectedAccountId("");
         setPortfolio(null);
@@ -41,102 +42,107 @@ const PortfolioOverview = () => {
     }
   };
 
-const loadPortfolio = async (accountIdOrAll, asOfDate) => {
-  if (!accountIdOrAll) return;
+  const loadPortfolio = async (accountIdOrAll, asOfDate) => {
+    if (!accountIdOrAll) return;
 
-  setLoadingPortfolio(true);
-  try {
-    const qs = asOfDate ? `?asOf=${encodeURIComponent(asOfDate)}` : "";
+    setLoadingPortfolio(true);
+    try {
+      const qs = asOfDate ? `?asOf=${encodeURIComponent(asOfDate)}` : "";
 
-    // ALL accounts
-    if (accountIdOrAll === "ALL") {
-      const ids = (accounts || []).map((a) => a.id);
+      // ALL accounts
+      if (accountIdOrAll === "ALL") {
+        const ids = (accounts || []).map((a) => a.id);
 
-      const results = await Promise.all(
-        ids.map((id) =>
-          api.get(`/accounts/${id}/portfolio${qs}`).then((r) => r.data),
-        ),
-      );
+        const results = await Promise.all(
+          ids.map((id) => api.get(`/accounts/${id}/portfolio${qs}`).then((r) => r.data)),
+        );
 
-      // positions: keep as separate rows (MVP)
-      const positions = results.flatMap((p) => p.positions || []);
+        // positions: keep as separate rows (MVP)
+        const positions = results.flatMap((p) => p.positions || []);
 
-      // cashBalances: sum by currency
-      const cashMap = new Map(); // currency -> amount
-      for (const p of results) {
-        for (const b of p.cashBalances || []) {
-          const cur = b.currency;
-          const amt = Number(b.amount ?? 0);
-          cashMap.set(cur, Number(cashMap.get(cur) ?? 0) + amt);
-        }
-      }
-      const cashBalances = Array.from(cashMap.entries()).map(([currency, amount]) => ({
-        currency,
-        amount,
-      }));
-
-      // totals by currency: sum by currency
-      const totalsMap = new Map(); // currency -> totals row
-      for (const p of results) {
-        for (const row of p.totals || []) {
-          const cur = row.currency;
-          const prev = totalsMap.get(cur) || {
-            currency: cur,
-            cashTotal: 0,
-            positionsTotal: 0,
-            portfolioTotal: 0,
-          };
-          totalsMap.set(cur, {
-            currency: cur,
-            cashTotal: Number(prev.cashTotal) + Number(row.cashTotal ?? 0),
-            positionsTotal: Number(prev.positionsTotal) + Number(row.positionsTotal ?? 0),
-            portfolioTotal: Number(prev.portfolioTotal) + Number(row.portfolioTotal ?? 0),
-          });
-        }
-      }
-      const totals = Array.from(totalsMap.values());
-
-      // baseTotals: sum only if all complete
-      const allComplete = results.every((p) => p.baseTotals?.complete);
-      const baseCurrency =
-        results.find((p) => p.baseTotals?.baseCurrency)?.baseTotals?.baseCurrency || "EUR";
-
-      const baseTotals = allComplete
-        ? {
-            complete: true,
-            baseCurrency,
-            cashTotal: results.reduce((s, p) => s + Number(p.baseTotals?.cashTotal ?? 0), 0),
-            positionsTotal: results.reduce((s, p) => s + Number(p.baseTotals?.positionsTotal ?? 0), 0),
-            portfolioTotal: results.reduce((s, p) => s + Number(p.baseTotals?.portfolioTotal ?? 0), 0),
+        // cashBalances: sum by currency
+        const cashMap = new Map(); // currency -> amount
+        for (const p of results) {
+          for (const b of p.cashBalances || []) {
+            const cur = b.currency;
+            const amt = Number(b.balance ?? 0);
+            cashMap.set(cur, Number(cashMap.get(cur) ?? 0) + amt);
           }
-        : { complete: false, baseCurrency };
+        }
+        const cashBalances = Array.from(cashMap.entries()).map(([currency, balance]) => ({
+          currency,
+          balance,
+        }));
 
-      setPortfolio({ positions, cashBalances, totals, baseTotals });
-      return;
+        // totals by currency: sum by currency
+        const totalsMap = new Map(); // currency -> totals row
+        for (const p of results) {
+          for (const row of p.totals || []) {
+            const cur = row.currency;
+            const prev = totalsMap.get(cur) || {
+              currency: cur,
+              cashTotal: 0,
+              positionsTotal: 0,
+              portfolioTotal: 0,
+            };
+            totalsMap.set(cur, {
+              currency: cur,
+              cashTotal: Number(prev.cashTotal) + Number(row.cashTotal ?? 0),
+              positionsTotal: Number(prev.positionsTotal) + Number(row.positionsTotal ?? 0),
+              portfolioTotal: Number(prev.portfolioTotal) + Number(row.portfolioTotal ?? 0),
+            });
+          }
+        }
+        const totals = Array.from(totalsMap.values());
+
+        // baseTotals: sum only if all complete
+        const allComplete = results.every((p) => p.baseTotals?.complete);
+        const baseCurrency =
+          results.find((p) => p.baseTotals?.baseCurrency)?.baseTotals?.baseCurrency || "EUR";
+
+        const baseTotals = allComplete
+          ? {
+              complete: true,
+              baseCurrency,
+              cashTotal: results.reduce((s, p) => s + Number(p.baseTotals?.cashTotal ?? 0), 0),
+              positionsTotal: results.reduce(
+                (s, p) => s + Number(p.baseTotals?.positionsTotal ?? 0),
+                0,
+              ),
+              portfolioTotal: results.reduce(
+                (s, p) => s + Number(p.baseTotals?.portfolioTotal ?? 0),
+                0,
+              ),
+            }
+          : { complete: false, baseCurrency };
+
+        setPortfolio({ positions, cashBalances, totals, baseTotals });
+        return;
+      }
+
+      // single account
+      const res = await api.get(`/accounts/${accountIdOrAll}/portfolio${qs}`);
+      setPortfolio(res.data);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.portfolioLoadFailed"));
+    } finally {
+      setLoadingPortfolio(false);
     }
-
-    // single account
-    const res = await api.get(`/accounts/${accountIdOrAll}/portfolio${qs}`);
-    setPortfolio(res.data);
-  } catch (e) {
-    console.error(e);
-    toast.error(t("tracker.portfolioLoadFailed"));
-  } finally {
-    setLoadingPortfolio(false);
-  }
-};
+  };
 
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
- useEffect(() => {
-  if (!selectedAccountId) return;
-  if (selectedAccountId === "ALL" && (!accounts || accounts.length === 0)) return;
+  useEffect(() => {
+    if (!selectedAccountId) return;
+    if (selectedAccountId === "ALL" && (!accounts || accounts.length === 0)) return;
 
-  loadPortfolio(selectedAccountId, asOf);
-}, [selectedAccountId, asOf, accounts]);
+    loadPortfolio(selectedAccountId, asOf);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccountId, asOf, accounts]);
 
   const sortedPositions = useMemo(() => {
     const positions = portfolio?.positions || [];
@@ -156,7 +162,6 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
     }
 
     try {
-      // adjust request fields if your CreateAccountRequest differs
       await api.post("/accounts", {
         name: newAccountName.trim(),
         accountKind,
@@ -255,11 +260,9 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
           >
             <option value="ALL">{t("tracker.allAccounts")}</option>
             {accounts.map((a) => (
-                
               <option key={a.id} value={String(a.id)}>
                 {a.name ?? t("tracker.accountFallback", { id: a.id })}
               </option>
-              
             ))}
           </select>
         </div>
@@ -300,15 +303,15 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.cash")}</div>
-                  <div className="font-mono">{String(portfolio.baseTotals.cashTotal)}</div>
+                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.cashTotal * 100) / 100)}</div>
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.positions")}</div>
-                  <div className="font-mono">{String(portfolio.baseTotals.positionsTotal)}</div>
+                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.positionsTotal * 100) / 100)}</div>
                 </div>
                 <div>
                   <div className="text-slate-600">{t("tracker.total")}</div>
-                  <div className="font-mono">{String(portfolio.baseTotals.portfolioTotal)}</div>
+                  <div className="font-mono">{String(Math.round(portfolio.baseTotals.portfolioTotal * 100) / 100)}</div>
                 </div>
               </div>
             ) : (
@@ -329,21 +332,36 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
 
           {/* Cash balances */}
           <div className="border rounded overflow-hidden mb-6">
-            <div className="p-4 font-semibold border-b">{t("tracker.cashBalancesTitle")}</div>
+            <div className="p-4 font-semibold border-b flex justify-between items-center">
+              {t("tracker.cashBalancesTitle")}
+              <button
+                type="button"
+                onClick={() => {
+                  const q =
+                    selectedAccountId && selectedAccountId !== "ALL"
+                      ? `?accountId=${encodeURIComponent(selectedAccountId)}`
+                      : "";
+                  navigate(`/cash-transactions/new${q}`);
+                }}
+                className="px-4 py-2 bg-btnColor text-white rounded font-semibold"
+              >
+                {t("cash.add")}
+              </button>
+            </div>
 
             <div className="overflow-auto">
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50">
                   <tr className="text-left">
                     <th className="p-3">{t("tracker.currency")}</th>
-                    <th className="p-3">{t("tracker.amount")}</th>
+                    <th className="p-3">{t("tracker.balance")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {(portfolio.cashBalances || []).map((b) => (
                     <tr key={b.currency} className="border-t">
                       <td className="p-3">{b.currency}</td>
-                      <td className="p-3 font-mono">{String(b.amount)}</td>
+                      <td className="p-3 font-mono">{String(Math.round(b.balance * 100) / 100)}</td>
                     </tr>
                   ))}
 
@@ -381,9 +399,9 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
                       <td className="p-3 font-mono">{p.assetSymbol}</td>
                       <td className="p-3">{p.assetName}</td>
                       <td className="p-3">{p.currency}</td>
-                      <td className="p-3 font-mono">{String(p.quantity)}</td>
+                      <td className="p-3 font-mono">{String(Math.round(p.quantity * 100) / 100)}</td>
                       <td className="p-3 font-mono">
-                        {p.lastPrice == null ? t("tracker.na") : String(p.lastPrice)}
+                        {p.lastPrice == null ? t("tracker.na") : String(Math.round(p.lastPrice * 100) / 100)}
                       </td>
                       <td className="p-3 font-mono">
                         {p.marketValue == null ? t("tracker.na") : String(p.marketValue)}
@@ -421,9 +439,9 @@ const loadPortfolio = async (accountIdOrAll, asOfDate) => {
                   {(portfolio.totals || []).map((tRow) => (
                     <tr key={tRow.currency} className="border-t">
                       <td className="p-3">{tRow.currency}</td>
-                      <td className="p-3 font-mono">{String(tRow.cashTotal)}</td>
-                      <td className="p-3 font-mono">{String(tRow.positionsTotal)}</td>
-                      <td className="p-3 font-mono">{String(tRow.portfolioTotal)}</td>
+                      <td className="p-3 font-mono">{String(Math.round(tRow.cashTotal * 100) / 100)}</td>
+                      <td className="p-3 font-mono">{String(Math.round(tRow.positionsTotal * 100) / 100)}</td>
+                      <td className="p-3 font-mono">{String(Math.round(tRow.portfolioTotal * 100) / 100)}</td>
                     </tr>
                   ))}
 

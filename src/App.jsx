@@ -20,6 +20,8 @@ import AboutPage from "./components/aboutPage/AboutPage";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Footer from "./components/Footer/Footer";
 import PortfolioOverview from "./components/Tracker/PortfolioOverview";
+import AddCashTransaction from "./components/Tracker/AddCashTransaction";
+
 
 const App = () => {
   return (
@@ -82,6 +84,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <PortfolioOverview />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cash-transactions/new"
+          element={
+            <ProtectedRoute>
+              <AddCashTransaction />
             </ProtectedRoute>
           }
         />
