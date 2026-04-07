@@ -11,7 +11,8 @@
     "profile": "Profile",
     "admin": "Admin",
     "logout": "Log Out",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+     "portfolio": "Portfolio"
   },
   "footer": {
     "aboutUs": "About Us",
@@ -100,6 +101,7 @@
     "resetError": "Error resetting password. Please try again."
   },
 
+
   "tracker": {
     "portfolioTitle": "Portfolio",
     "loadingAccounts": "Loading accounts...",
@@ -116,6 +118,14 @@
     "sortedByMarketValueDesc": "Assets sorted by market value (highest first).",
     "accountLabel": "Account",
     "accountFallback": "Account #{{id}}",
+
+    "accountKind": "Account kind",
+    "tradingMode": "Trading mode",
+    "accountKindBroker": "Broker",
+    "accountKindP2P": "P2P",
+    "accountKindMixed": "Mixed",
+    "tradingModeCash": "Cash",
+    "tradingModeMargin": "Margin",
 
     "baseTotalsTitle": "Totals (base)",
     "baseCurrency": "Base",
@@ -135,13 +145,7 @@
     "noPositions": "No positions.",
 
     "totalsByCurrencyTitle": "Totals by currency",
-    "noTotals": "No totals.",
-    "accountKind": "Account kind",
-    "tradingMode": "Trading mode",
-    "accountKindBroker": "Broker",
-    "accountKindP2P": "P2P",
-    "accountKindMixed": "Mixed",
-    "tradingModeCash": "Cash",
-    "tradingModeMargin": "Margin"
+    "noTotals": "No totals."
   }
 }
+
