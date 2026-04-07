@@ -119,7 +119,7 @@ const CashOverview = () => {
           >
             {accounts.map((a) => (
               <option key={a.id} value={String(a.id)}>
-                {a.name ?? t("tracker.accountFallback", { id: a.id })}
+                {a.accountName ?? t("tracker.accountFallback", { id: a.id })}
               </option>
             ))}
           </select>
