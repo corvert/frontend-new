@@ -82,6 +82,12 @@ const CashOverview = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId]);
 
+    useEffect(() => {
+    if (!selectedAccountId) return;
+    refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to]);
+
   const sortedBalances = useMemo(() => {
     return [...(balances || [])].sort((a, b) => (a.currency || "").localeCompare(b.currency || ""));
   }, [balances]);
@@ -173,6 +179,7 @@ const CashOverview = () => {
               onClick={() => {
                 setFrom("");
                 setTo("");
+                
               }}
               className="px-4 py-2 border rounded hover:bg-slate-50"
             >
