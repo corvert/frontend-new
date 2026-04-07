@@ -51,7 +51,7 @@ const Login = () => {
     //store the token on the context state  so that it can be shared any where in our application by context provider
     setToken(token);
 
-    navigate("/notes");
+    navigate("/portfolio");
   };
 
   //function for handle login with credentials

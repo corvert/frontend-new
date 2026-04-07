@@ -34,8 +34,8 @@ const OAuth2RedirectHandler = () => {
 
         // Delay navigation to ensure local storage operations complete
         setTimeout(() => {
-          console.log("Navigating to /notes");
-          navigate("/notes");
+          console.log("Navigating to /portfolio");
+          navigate("/portfolio");
         }, 100); // 100ms delay
       } catch (error) {
         console.error("Token decoding failed:", error);

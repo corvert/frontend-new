@@ -98,5 +98,50 @@
     "forgotError": "Error sending password reset email. Please try again.",
     "resetSuccess": "Password reset successful! You can now log in.",
     "resetError": "Error resetting password. Please try again."
+  },
+
+  "tracker": {
+    "portfolioTitle": "Portfolio",
+    "loadingAccounts": "Loading accounts...",
+    "accountsLoadFailed": "Failed to load accounts",
+    "loadingPortfolio": "Loading portfolio...",
+    "portfolioLoadFailed": "Failed to load portfolio",
+    "portfolioMissing": "Portfolio is missing.",
+    "noAccountsHint": "You don't have any accounts yet. Create an account to see your portfolio.",
+    "accountNamePlaceholder": "Account name (e.g. Broker, IBKR...)",
+    "addAccount": "Add account",
+    "accountNameRequired": "Please enter an account name",
+    "accountCreated": "Account created",
+    "accountCreateFailed": "Failed to create account",
+    "sortedByMarketValueDesc": "Assets sorted by market value (highest first).",
+    "accountLabel": "Account",
+    "accountFallback": "Account #{{id}}",
+
+    "baseTotalsTitle": "Totals (base)",
+    "baseCurrency": "Base",
+    "cash": "Cash",
+    "positions": "Positions",
+    "total": "Total",
+    "fxMissing": "FX rates missing — base totals are incomplete.",
+
+    "assetsTitle": "Assets",
+    "symbol": "Symbol",
+    "name": "Name",
+    "currency": "Currency",
+    "quantity": "Quantity",
+    "lastPrice": "Last price",
+    "marketValue": "Market value",
+    "na": "-",
+    "noPositions": "No positions.",
+
+    "totalsByCurrencyTitle": "Totals by currency",
+    "noTotals": "No totals.",
+    "accountKind": "Account kind",
+    "tradingMode": "Trading mode",
+    "accountKindBroker": "Broker",
+    "accountKindP2P": "P2P",
+    "accountKindMixed": "Mixed",
+    "tradingModeCash": "Cash",
+    "tradingModeMargin": "Margin"
   }
 }

@@ -19,6 +19,7 @@ import ContactPage from "./components/contactPage/ContactPage";
 import AboutPage from "./components/aboutPage/AboutPage";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Footer from "./components/Footer/Footer";
+import PortfolioOverview from "./components/Tracker/PortfolioOverview";
 
 const App = () => {
   return (
@@ -73,6 +74,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/portfolio"
+          element={
+            <ProtectedRoute>
+              <PortfolioOverview />
             </ProtectedRoute>
           }
         />
