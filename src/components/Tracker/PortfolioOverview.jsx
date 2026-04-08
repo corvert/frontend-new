@@ -16,6 +16,8 @@ const PortfolioOverview = () => {
   const [accountKind, setAccountKind] = useState("BROKER");
   const [tradingMode, setTradingMode] = useState("CASH");
   const [asOf, setAsOf] = useState("");
+  const [perf, setPerf] = useState(null);
+  const [loadingPerf, setLoadingPerf] = useState(false);
   const { isAdmin } = useMyContext();
   const navigate = useNavigate();
 
@@ -131,6 +133,28 @@ const PortfolioOverview = () => {
     }
   };
 
+  const loadPerformance = async (accountIdOrAll, asOfDate) => {
+    if (!accountIdOrAll) return;
+
+    setLoadingPerf(true);
+    try {
+      const scope = accountIdOrAll === "ALL" ? "ALL" : "ACCOUNT";
+      const params = new URLSearchParams();
+      params.set("scope", scope);
+      if (scope === "ACCOUNT") params.set("accountId", String(accountIdOrAll));
+      if (asOfDate) params.set("to", asOfDate);
+
+      const res = await api.get(`/performance/summary?${params.toString()}`);
+      setPerf(res.data);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.performanceLoadFailed"));
+      setPerf(null);
+    } finally {
+      setLoadingPerf(false);
+    }
+  };
+
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,6 +165,8 @@ const PortfolioOverview = () => {
     if (selectedAccountId === "ALL" && (!accounts || accounts.length === 0)) return;
 
     loadPortfolio(selectedAccountId, asOf);
+    loadPerformance(selectedAccountId, asOf);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId, asOf, accounts]);
 
@@ -294,30 +320,44 @@ const PortfolioOverview = () => {
         <>
           {/* Base totals */}
           <div className="border rounded p-4 mb-6">
-            <div className="font-semibold mb-2">{t("tracker.baseTotalsTitle")}</div>
-            {portfolio.baseTotals?.complete ? (
-              <div className="grid sm:grid-cols-4 grid-cols-2 gap-3 text-sm">
+            <div className="font-semibold mb-2">{t("tracker.performanceTitle")}</div>
+
+            {loadingPerf ? (
+              <div className="text-sm text-slate-600">{t("tracker.loadingPerformance")}</div>
+            ) : !perf ? (
+              <div className="text-sm text-slate-600">{t("tracker.performanceMissing")}</div>
+            ) : perf.complete ? (
+              <div className="grid sm:grid-cols-3 grid-cols-2 gap-3 text-sm">
+          
+
                 <div>
-                  <div className="text-slate-600">{t("tracker.baseCurrency")}</div>
-                  <div className="font-mono">{portfolio.baseTotals.baseCurrency}</div>
+                  <div className="text-slate-600">{t("tracker.portfolioValue")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.portfolioValue || 0) * 100) / 100)}</div>
                 </div>
+
                 <div>
-                  <div className="text-slate-600">{t("tracker.cash")}</div>
-                  <div className="font-mono">
-                    {String(Math.round(portfolio.baseTotals.cashTotal * 100) / 100)}
-                  </div>
+                  <div className="text-slate-600">{t("tracker.capitalGrowth")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.capitalGrowth || 0) * 100) / 100)}</div>
                 </div>
+
                 <div>
-                  <div className="text-slate-600">{t("tracker.positions")}</div>
-                  <div className="font-mono">
-                    {String(Math.round(portfolio.baseTotals.positionsTotal * 100) / 100)}
-                  </div>
+                  <div className="text-slate-600">{t("tracker.fees")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.fees || 0) * 100) / 100)}</div>
                 </div>
+
                 <div>
-                  <div className="text-slate-600">{t("tracker.total")}</div>
-                  <div className="font-mono">
-                    {String(Math.round(portfolio.baseTotals.portfolioTotal * 100) / 100)}
-                  </div>
+                  <div className="text-slate-600">{t("tracker.income")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.income || 0) * 100) / 100)}</div>
+                </div>
+
+                <div>
+                  <div className="text-slate-600">{t("tracker.currencyImpact")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.currencyImpact || 0) * 100) / 100)}</div>
+                </div>
+
+                <div>
+                  <div className="text-slate-600">{t("tracker.totalReturn")}</div>
+                  <div className="font-mono">{String(Math.round(Number(perf.totalReturn || 0) * 100) / 100)}</div>
                 </div>
               </div>
             ) : (

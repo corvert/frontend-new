@@ -157,7 +157,17 @@
     "allAccounts": "All accounts",
     "balance": "Balance",
     "tradesTitle": "Trades",
-    "tradesHint": "Create a trade to add positions to your portfolio."
+    "tradesHint": "Create a trade to add positions to your portfolio.",
+    "performanceTitle": "Totals (EUR)",
+    "loadingPerformance": "Loading totals...",
+    "performanceMissing": "Totals are missing.",
+    "performanceLoadFailed": "Failed to load totals.",
+    "portfolioValue": "Portfolio value",
+    "capitalGrowth": "Capital growth",
+    "fees": "Fees",
+    "income": "Income",
+    "currencyImpact": "Currency impact",
+    "totalReturn": "Total return"
   },
   "cash": {
     "title": "Add cash transaction",
