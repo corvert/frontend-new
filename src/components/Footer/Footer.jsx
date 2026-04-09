@@ -34,7 +34,7 @@ const Footer = () => {
 
         <p className="w-fit  flex items-center text-white text-sm">
           <span>
-            &copy;{currentYear} SecureNote | {t("footer.rights")}
+            &copy;{currentYear} OrPortfolio | {t("footer.rights")}
           </span>
         </p>
 

@@ -171,7 +171,14 @@
     "totalReturn": "Total return",
     "backToPortfolio": "Back to portfolio",
     "saving": "Saving...",
-    "saveFailed": "Failed to save. Please try again."
+    "saveFailed": "Failed to save. Please try again.",
+    "costBaseEur": "Cost base",
+    "marketValueEur": "Market value",
+    "profitLossEur": "Profit/loss",
+    "totalReturnEur": "Total return",
+    "assetsPerformanceLoadFailed": "Failed to load asset performance data."
+
+
   },
   "cash": {
     "title": "Add cash transaction",
@@ -239,7 +246,8 @@
     "priceRequired": "Please enter price",
     "dateRequired": "Please select date",
     "noAssetsHint": "No assets yet. Create one first.",
-    "priceUpsertFailed": "Trade saved, but failed to save price history for this asset."
+    "priceUpsertFailed": "Trade saved, but failed to save price history for this asset.",
+     "transactionSum": "Sum"
   },
   "asset": {
     "title": "Add asset",
@@ -258,6 +266,27 @@
     "isin": "ISIN",
     "currency": "Currency",
     "submit": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+     "loading": "Loading...",
+    "detailsTitle": "Asset details",
+    "detailsLoadFailed": "Failed to load asset details",
+    "notFoundInScope": "Asset not found in selected scope/account.",
+    "asOf": "As of",
+    "back": "Back",
+    "backToPortfolio": "Back to portfolio",
+    "value": "Value",
+    "capitalGain": "Capital gain",
+    "fees": "Fees",
+    "income": "Income",
+    "currencyImpact": "Currency impact",
+    "totalReturn": "Total return",
+    "trades": "Trades",
+    "pickAccountForTrades": "Pick a single account to see trades/cashflow.",
+    "noTrades": "No trades found.",
+    "cashflows": "Cashflows",
+    "noCashflows": "No cashflows found.",
+    "pickAccountForCash": "Select a single account first",
+    "addCashflow": "Add cashflow",
+    "transactionSum": "Sum"
   }
 }

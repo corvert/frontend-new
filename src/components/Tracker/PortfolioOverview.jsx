@@ -18,6 +18,8 @@ const PortfolioOverview = () => {
   const [asOf, setAsOf] = useState("");
   const [perf, setPerf] = useState(null);
   const [loadingPerf, setLoadingPerf] = useState(false);
+  const [assetPerf, setAssetPerf] = useState([]);
+  const [loadingAssetPerf, setLoadingAssetPerf] = useState(false);
   const { isAdmin } = useMyContext();
   const navigate = useNavigate();
 
@@ -155,6 +157,28 @@ const PortfolioOverview = () => {
     }
   };
 
+  const loadAssetPerformance = async (accountIdOrAll, asOfDate) => {
+    if (!accountIdOrAll) return;
+
+    setLoadingAssetPerf(true);
+    try {
+      const scope = accountIdOrAll === "ALL" ? "ALL" : "ACCOUNT";
+      const params = new URLSearchParams();
+      params.set("scope", scope);
+      if (scope === "ACCOUNT") params.set("accountId", String(accountIdOrAll));
+      if (asOfDate) params.set("to", asOfDate);
+
+      const res = await api.get(`/performance/assets?${params.toString()}`);
+      setAssetPerf(res.data || []);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.assetsPerformanceLoadFailed") ?? "Failed to load asset performance");
+      setAssetPerf([]);
+    } finally {
+      setLoadingAssetPerf(false);
+    }
+  };
+
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,6 +190,7 @@ const PortfolioOverview = () => {
 
     loadPortfolio(selectedAccountId, asOf);
     loadPerformance(selectedAccountId, asOf);
+    loadAssetPerformance(selectedAccountId, asOf);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId, asOf, accounts]);
@@ -274,7 +299,7 @@ const PortfolioOverview = () => {
       <div className="flex items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold">{t("tracker.portfolioTitle")}</h1>
-          <p className="text-slate-600">{t("tracker.sortedByMarketValueDesc")}</p>
+          
         </div>
 
         <div className="flex items-center gap-2">
@@ -449,7 +474,7 @@ const PortfolioOverview = () => {
           <div className="border rounded overflow-hidden mb-6">
             <div className="p-4 font-semibold border-b flex justify-between items-center">
               {t("tracker.assetsTitle")}
-             
+
               <button
                 type="button"
                 onClick={() => {
@@ -465,48 +490,87 @@ const PortfolioOverview = () => {
               </button>
             </div>
 
-            <div className="overflow-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-slate-50">
-                  <tr className="text-left">
-                    <th className="p-3">{t("tracker.symbol")}</th>
-                    <th className="p-3">{t("tracker.name")}</th>
-                    <th className="p-3">{t("tracker.currency")}</th>
-                    <th className="p-3">{t("tracker.quantity")}</th>
-                    <th className="p-3">{t("tracker.lastPrice")}</th>
-                    <th className="p-3">{t("tracker.marketValue")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedPositions.map((p) => (
-                    <tr key={p.assetId} className="border-t">
-                      <td className="p-3 font-mono">{p.assetSymbol}</td>
-                      <td className="p-3">{p.assetName}</td>
-                      <td className="p-3">{p.currency}</td>
-                      <td className="p-3 font-mono">
-                        {String(Math.round(p.quantity * 100) / 100)}
-                      </td>
-                      <td className="p-3 font-mono">
-                        {p.lastPrice == null
-                          ? t("tracker.na")
-                          : String(Math.round(p.lastPrice * 100) / 100)}
-                      </td>
-                      <td className="p-3 font-mono">
-                        {p.marketValue == null ? t("tracker.na") : String(p.marketValue)}
-                      </td>
+            {loadingAssetPerf ? (
+              <div className="p-4 text-sm text-slate-600">
+                {t("tracker.loading") ?? "Loading..."}
+              </div>
+            ) : (
+              <div className="overflow-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-slate-50">
+                    <tr className="text-left">
+                      <th className="p-3">{t("tracker.symbol")}</th>
+                      <th className="p-3">{t("tracker.name")}</th>
+                      <th className="p-3">{t("tracker.lastPrice")}</th>
+                      <th className="p-3">{t("tracker.quantity")}</th>
+                      <th className="p-3">{t("tracker.costBaseEur") ?? "Cost base (EUR)"}</th>
+                      <th className="p-3">{t("tracker.marketValueEur") ?? "Market value (EUR)"}</th>
+                      <th className="p-3">{t("tracker.totalReturnEur") ?? "Total return (EUR)"}</th>
                     </tr>
-                  ))}
+                  </thead>
+                  <tbody>
+                    {(assetPerf || []).map((p) => (
+                      <tr key={p.assetId} className="border-t">
+                          <td className="p-3">
+                          <Link
+                            to={`/assets/${p.assetId}?accountId=${encodeURIComponent(selectedAccountId)}${asOf ? `&to=${encodeURIComponent(asOf)}` : ""}`}
+                            className="underline"
+                          >
+                            {p.assetSymbol  }
+                          </Link>
+                        </td>
+                        <td className="p-3">
+                          <Link
+                            to={`/assets/${p.assetId}?accountId=${encodeURIComponent(selectedAccountId)}${asOf ? `&to=${encodeURIComponent(asOf)}` : ""}`}
+                            className="underline"
+                          >
+                            {p.assetName}
+                          </Link>
+                        </td>
 
-                  {sortedPositions.length === 0 && (
-                    <tr className="border-t">
-                      <td className="p-3 text-slate-600" colSpan={6}>
-                        {t("tracker.noPositions")}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                        {/* Price in original currency */}
+                        <td className="p-3 font-mono">
+                          {p.lastPrice == null
+                            ? t("tracker.na")
+                            : String(Math.round(Number(p.lastPrice) * 100) / 100)}{" "}
+                          {p.currency ?? ""}
+                        </td>
+
+                        <td className="p-3 font-mono">
+                          {String(Math.round(Number(p.quantity ?? 0) * 100) / 100)}
+                        </td>
+
+                        {/* Cost base (EUR) */}
+                        <td className="p-3 font-mono">
+                          {String(Math.round(Number(p.openCostBasisBase ?? 0) * 100) / 100)}{" "}
+                          {p.baseCurrency ?? "EUR"}
+                        </td>
+
+                        {/* Market value (EUR) */}
+                        <td className="p-3 font-mono">
+                          {String(Math.round(Number(p.marketValueBase ?? 0) * 100) / 100)}{" "}
+                          {p.baseCurrency ?? "EUR"}
+                        </td>
+
+                        {/* Total return (EUR) */}
+                        <td className="p-3 font-mono">
+                          {String(Math.round(Number(p.totalReturnBase ?? 0) * 100) / 100)}{" "}
+                          {p.baseCurrency ?? "EUR"}
+                        </td>
+                      </tr>
+                    ))}
+
+                    {(assetPerf || []).length === 0 && (
+                      <tr className="border-t">
+                        <td className="p-3 text-slate-600" colSpan={7}>
+                          {t("tracker.noPositions")}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           {/* Currency totals table */}
