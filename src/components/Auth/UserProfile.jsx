@@ -15,6 +15,7 @@ import { jwtDecode } from "jwt-decode";
 import { Blocks } from "react-loader-spinner";
 import moment from "moment";
 import Errors from "../Errors";
+import { useTranslation } from "react-i18next";
 
 const UserProfile = () => {
   // Access the currentUser and token hook using the useMyContext custom hook from the ContextProvider
@@ -44,10 +45,13 @@ const UserProfile = () => {
   const [disabledLoader, setDisbledLoader] = useState(false);
   const [twofaCodeLoader, settwofaCodeLoader] = useState(false);
 
+   const { t } = useTranslation();
+
   const {
     register,
     handleSubmit,
     setValue,
+      watch,
 
     formState: { errors },
   } = useForm({
@@ -109,8 +113,7 @@ const UserProfile = () => {
 
   //verify the 2fa
   const verify2FA = async () => {
-    if (!code || code.trim().length === 0)
-      return toast.error("Please Enter The Code To Verify");
+    if (!code || code.trim().length === 0) return toast.error("Please Enter The Code To Verify");
 
     settwofaCodeLoader(true);
 
@@ -152,6 +155,9 @@ const UserProfile = () => {
         },
       });
 
+      setValue("password", "");
+      setValue("confirmPassword", "");
+
       //fetchUser();
       toast.success("Update Credential successful");
     } catch (error) {
@@ -172,9 +178,7 @@ const UserProfile = () => {
       setCredentialExpired(!currentUser.credentialsNonExpired);
 
       //moment npm package is used to format the date
-      const expiredFormatDate = moment(
-        currentUser?.credentialsExpiryDate
-      ).format("D MMMM YYYY");
+      const expiredFormatDate = moment(currentUser?.credentialsExpiryDate).format("D MMMM YYYY");
       setCredentialExpireDate(expiredFormatDate);
     }
   }, [currentUser, setValue]);
@@ -183,9 +187,7 @@ const UserProfile = () => {
     if (token) {
       const decodedToken = jwtDecode(token);
 
-      const lastLoginSession = moment
-        .unix(decodedToken.iat)
-        .format("dddd, DD.MM.YYYY, HH:mm");
+      const lastLoginSession = moment.unix(decodedToken.iat).format("dddd, DD.MM.YYYY, HH:mm");
       //set the loggin session from the token
       setLoginSession(lastLoginSession);
     }
@@ -279,7 +281,7 @@ const UserProfile = () => {
       //fetchUser();
       toast.success("Update Credentials Expiry Status");
     } catch (error) {
-      toast.error("Credentials Expiry Status Failed", error?.response?.data?.message );
+      toast.error("Credentials Expiry Status Failed", error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -325,21 +327,14 @@ const UserProfile = () => {
           <div className="xl:w-[70%] lg:w-[80%] sm:w-[90%] w-full sm:mx-auto sm:px-0 px-4   min-h-125 flex lg:flex-row flex-col gap-4 ">
             <div className="flex-1  flex flex-col shadow-lg shadow-gray-300 gap-2 px-4 py-6">
               <div className="flex flex-col items-center gap-2   ">
-                <Avatar
-                  alt={currentUser?.username}
-                  src="/static/images/avatar/1.jpg"
-                />
-                <h3 className="font-semibold text-2xl">
-                  {currentUser?.username}
-                </h3>
+                <Avatar alt={currentUser?.username} src="/static/images/avatar/1.jpg" />
+                <h3 className="font-semibold text-2xl">{currentUser?.username}</h3>
               </div>
               <div className="my-4 ">
                 <div className="space-y-2 px-4 mb-1">
                   <h1 className="font-semibold text-md text-slate-800">
                     UserName :{" "}
-                    <span className=" text-slate-700  font-normal">
-                      {currentUser?.username}
-                    </span>
+                    <span className=" text-slate-700  font-normal">{currentUser?.username}</span>
                   </h1>
                   <h1 className="font-semibold text-md text-slate-800">
                     Role :{" "}
@@ -376,6 +371,7 @@ const UserProfile = () => {
                           placeholder="Enter your username"
                           register={register}
                           errors={errors}
+                          readOnly
                         />{" "}
                         <InputField
                           label="Email"
@@ -400,6 +396,21 @@ const UserProfile = () => {
                           errors={errors}
                           min={6}
                         />
+                        <InputField
+                          label="Confirm Password"
+                          required
+                          id="confirmPassword"
+                          className="text-sm"
+                          type="password"
+                          message="*Confirm Password is required"
+                          placeholder={t("auth.confirmPasswordPlaceholder")}
+                          register={register}
+                          errors={errors}
+                          min={6}
+                          validate={(value) =>
+                            value === watch("password") || "Passwords do not match"
+                          }
+                        />
                         <Buttons
                           disabled={loading}
                           className="bg-customRed font-semibold flex justify-center text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
@@ -419,9 +430,7 @@ const UserProfile = () => {
                         aria-controls="panel1-content"
                         id="panel1-header"
                       >
-                        <h3 className="text-slate-800 text-lg font-semibold">
-                          Account Setting
-                        </h3>
+                        <h3 className="text-slate-800 text-lg font-semibold">Account Setting</h3>
                       </AccordionSummary>
                       <AccordionDetails className="shadow-md shadow-gray-300">
                         <div className="flex flex-col gap-4">
@@ -462,8 +471,7 @@ const UserProfile = () => {
                               </h3>
                               <div className="shadow-gray-300 shadow-md px-4 py-4 rounded-md">
                                 <p className="text-slate-700  text-sm ">
-                                  Your credential will expired{" "}
-                                  <span>{credentialExpireDate}</span>
+                                  Your credential will expired <span>{credentialExpireDate}</span>
                                 </p>
                               </div>
                             </div>
@@ -513,8 +521,7 @@ const UserProfile = () => {
                   Multi Factor Authentication
                 </h3>{" "}
                 <p className="text-slate-800 text-sm ">
-                  Two Factor Authentication Add a additional layer of security
-                  to your account
+                  Two Factor Authentication Add a additional layer of security to your account
                 </p>
               </div>
 

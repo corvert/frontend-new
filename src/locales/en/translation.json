@@ -64,6 +64,7 @@
     "password": "Password",
     "passwordRequired": "*Password is required",
     "passwordPlaceholder": "Type your password",
+    "confirmPasswordPlaceholder": "Confirm your password",
     "loading": "Loading...",
     "login": "Log In",
     "forgotPassword": "Forgot Password?",
@@ -167,7 +168,10 @@
     "fees": "Fees",
     "income": "Income",
     "currencyImpact": "Currency impact",
-    "totalReturn": "Total return"
+    "totalReturn": "Total return",
+    "backToPortfolio": "Back to portfolio",
+    "saving": "Saving...",
+    "saveFailed": "Failed to save. Please try again."
   },
   "cash": {
     "title": "Add cash transaction",

@@ -281,7 +281,14 @@ const PortfolioOverview = () => {
           <label className="text-sm text-slate-600">{t("tracker.accountLabel")}</label>
           <select
             value={selectedAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (v === "__ADD_ACCOUNT__") {
+                navigate("/accounts/new");
+                return;
+              }
+              setSelectedAccountId(v);
+            }}
             className="border rounded px-3 py-2"
           >
             <option value="ALL">{t("tracker.allAccounts")}</option>
@@ -290,6 +297,7 @@ const PortfolioOverview = () => {
                 {a.accountName ?? t("tracker.accountFallback", { id: a.id })}
               </option>
             ))}
+            <option value="__ADD_ACCOUNT__">+ {t("tracker.addAccount")}</option>
           </select>
         </div>
         <div className="flex items-center gap-2">
@@ -328,36 +336,46 @@ const PortfolioOverview = () => {
               <div className="text-sm text-slate-600">{t("tracker.performanceMissing")}</div>
             ) : perf.complete ? (
               <div className="grid sm:grid-cols-3 grid-cols-2 gap-3 text-sm">
-          
-
                 <div>
                   <div className="text-slate-600">{t("tracker.portfolioValue")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.portfolioValue || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.portfolioValue || 0) * 100) / 100)}
+                  </div>
                 </div>
 
                 <div>
                   <div className="text-slate-600">{t("tracker.capitalGrowth")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.capitalGrowth || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.capitalGrowth || 0) * 100) / 100)}
+                  </div>
                 </div>
 
                 <div>
                   <div className="text-slate-600">{t("tracker.fees")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.fees || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.fees || 0) * 100) / 100)}
+                  </div>
                 </div>
 
                 <div>
                   <div className="text-slate-600">{t("tracker.income")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.income || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.income || 0) * 100) / 100)}
+                  </div>
                 </div>
 
                 <div>
                   <div className="text-slate-600">{t("tracker.currencyImpact")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.currencyImpact || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.currencyImpact || 0) * 100) / 100)}
+                  </div>
                 </div>
 
                 <div>
                   <div className="text-slate-600">{t("tracker.totalReturn")}</div>
-                  <div className="font-mono">{String(Math.round(Number(perf.totalReturn || 0) * 100) / 100)}</div>
+                  <div className="font-mono">
+                    {String(Math.round(Number(perf.totalReturn || 0) * 100) / 100)}
+                  </div>
                 </div>
               </div>
             ) : (
@@ -431,7 +449,7 @@ const PortfolioOverview = () => {
           <div className="border rounded overflow-hidden mb-6">
             <div className="p-4 font-semibold border-b flex justify-between items-center">
               {t("tracker.assetsTitle")}
-              {t("tracker.tradesTitle")}
+             
               <button
                 type="button"
                 onClick={() => {
