@@ -288,5 +288,45 @@
     "pickAccountForCash": "Select a single account first",
     "addCashflow": "Add cashflow",
     "transactionSum": "Sum"
+  },
+   "income": {
+    "title": "Add dividend / interest",
+    "loading": "Loading...",
+    "loadFailed": "Failed to load data",
+
+    "addDividend": "Add dividend",
+    "addInterest": "Add interest",
+
+    "account": "Account",
+    "asset": "Asset",
+    "type": "Type",
+    "date": "Date",
+    "currency": "Currency",
+
+    "grossAmount": "Gross amount",
+    "withholdingTax": "Withholding tax",
+    "netAmount": "Net amount",
+
+    "note": "Note",
+    "notePlaceholder": "Optional note",
+
+    "submit": "Save",
+    "cancel": "Cancel",
+
+    "created": "Income transaction saved",
+    "createFailed": "Failed to save income transaction",
+
+    "accountRequired": "Please select an account",
+    "assetRequired": "Please select an asset",
+    "dateRequired": "Please select date",
+    "currencyRequired": "Please enter currency",
+
+    "grossRequired": "Please enter gross amount",
+    "grossPositive": "Gross amount must be positive",
+    "taxNonNegative": "Withholding tax cannot be negative",
+    "netNonNegative": "Net amount cannot be negative",
+
+    "noAssetsHint": "No assets found. Create an asset first.",
+    "addIncome": "Add income"
   }
 }

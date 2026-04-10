@@ -117,14 +117,14 @@ const Navbar = () => {
               )}
               <button
                 onClick={handleLogout}
-                className="w-24 text-center bg-customRed font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300"
+                className="w-32 text-center bg-customRed font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300"
               >
                 {t("nav.logout")}
               </button>
             </>
           ) : (
             <Link to="/signup">
-              <li className="w-24 text-center bg-btnColor font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300">
+              <li className="w-32 text-center bg-btnColor font-semibold px-4 py-2 rounded-sm cursor-pointer hover:text-slate-300">
                 {t("nav.signup")}
               </li>
             </Link>

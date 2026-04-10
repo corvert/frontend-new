@@ -156,7 +156,6 @@ const AssetDetails = () => {
           <button onClick={() => navigate("/portfolio")} className="px-4 py-2 border rounded">
             {t("asset.backToPortfolio") ?? "Back to portfolio"}
           </button>
-         
         </div>
       </div>
 
@@ -215,7 +214,7 @@ const AssetDetails = () => {
       <div className="border rounded overflow-hidden mb-6">
         <div className="p-4 font-semibold border-b flex justify-between items-center">
           {t("asset.trades") ?? "Trades"}
-           <button
+          <button
             onClick={() => {
               const q = new URLSearchParams();
               if (accountId !== "ALL") q.set("accountId", String(accountId));
@@ -323,13 +322,16 @@ const AssetDetails = () => {
                 toast.error(t("asset.pickAccountForCash") ?? "Select a single account first");
                 return;
               }
-              // Later: navigate to a dedicated income form route, e.g. /cash-transactions/new?type=DIVIDEND&assetId=...
-              navigate(`/cash-transactions/new?accountId=${encodeURIComponent(accountId)}`);
+              navigate(
+                `/income/new?accountId=${encodeURIComponent(accountId)}&assetId=${encodeURIComponent(assetId)}`,
+              );
             }}
             className="px-4 py-2 border rounded"
           >
-            {t("asset.addCashflow") ?? "Add cashflow"}
+            {t("income.addIncome") ?? "Add income"}
           </button>
+
+          
 
           <Link to="/portfolio" className="px-4 py-2 border rounded inline-block">
             {t("asset.backToPortfolio") ?? "Back"}

@@ -26,6 +26,7 @@ import AddTrade from "./components/Trade/AddTrade";
 import AddAsset from "./components/Asset/AddAsset";
 import CreateAccount from "./components/Tracker/CreateAccount";
 import AssetDetails from "./components/Asset/AssetDetails";
+import AddIncomeTransaction from "./components/Cash/AddIncomeTransaction";
 
 const App = () => {
   return (
@@ -137,6 +138,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <AssetDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/income/new"
+          element={
+            <ProtectedRoute>
+              <AddIncomeTransaction />
             </ProtectedRoute>
           }
         />
