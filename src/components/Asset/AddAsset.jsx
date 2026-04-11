@@ -45,7 +45,6 @@ const AddAsset = () => {
       const created = res.data;
       toast.success(t("asset.created"));
 
-      // if we came from trade flow, go back and preselect the new asset
       if (returnTo.startsWith("/trades/new")) {
         const q = new URLSearchParams();
         if (accountId) q.set("accountId", accountId);
@@ -61,7 +60,7 @@ const AddAsset = () => {
   };
 
   return (
-    <div className="p-6 max-w-xl">
+     <div className="p-6 max-w-xl w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t("asset.title")}</h1>
 
       <form onSubmit={onSubmit} className="grid gap-3">

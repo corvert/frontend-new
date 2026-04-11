@@ -106,7 +106,7 @@ const AddTrade = () => {
   if (loading) return <div className="p-6">{t("trade.loading")}</div>;
 
   return (
-    <div className="p-6 max-w-xl">
+    <div className="p-6 max-w-xl w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t("trade.title")}</h1>
 
       <form onSubmit={onSubmit} className="grid gap-3">

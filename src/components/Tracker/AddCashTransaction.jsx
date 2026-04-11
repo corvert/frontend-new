@@ -90,7 +90,7 @@ const AddCashTransaction = () => {
 
   if (!accounts || accounts.length === 0) {
     return (
-      <div className="p-6 max-w-xl">
+      <div className="p-6 max-w-xl w-full mx-auto">
         <h1 className="text-2xl font-bold mb-2">{t("cash.title")}</h1>
         <p className="text-slate-600">{t("tracker.noAccountsHint")}</p>
       </div>
@@ -98,7 +98,7 @@ const AddCashTransaction = () => {
   }
 
   return (
-    <div className="p-6 max-w-xl">
+    <div className="p-6 max-w-xl w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t("cash.title")}</h1>
 
       <form onSubmit={onSubmit} className="grid gap-3">
