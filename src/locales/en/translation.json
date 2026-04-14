@@ -172,11 +172,23 @@
     "backToPortfolio": "Back to portfolio",
     "saving": "Saving...",
     "saveFailed": "Failed to save. Please try again.",
+    "cancel": "Cancel",
     "costBaseEur": "Cost base",
     "marketValueEur": "Market value",
     "profitLossEur": "Profit/loss",
     "totalReturnEur": "Total return",
-    "assetsPerformanceLoadFailed": "Failed to load asset performance data."
+    "assetsPerformanceLoadFailed": "Failed to load asset performance data.",
+    "priceStale": "Old ({{days}}d)",
+    "priceStaleTitle": "Last price is {{days}} days old",
+    "updatePrice": "Update price",
+    "updatePriceTitle": "Update price",
+    "updatePriceHint": "Last price is older than 7 days. Enter a newer price.",
+    "priceDate": "Price date",
+    "priceValue": "Price",
+    "priceUpdated": "Price updated",
+    "priceUpdateFailed": "Failed to update price",
+    "priceDateRequired": "Please enter a date",
+    "priceValueRequired": "Please enter a price"
 
 
   },

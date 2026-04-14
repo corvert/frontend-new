@@ -98,5 +98,19 @@
     "forgotError": "Viga parooli taastamise kirja saatmisel. Proovi uuesti.",
     "resetSuccess": "Parool uuendatud! Nuud saad sisse logida.",
     "resetError": "Parooli uuendamine ebaonnestus. Proovi uuesti."
+  },
+  "tracker": {
+    "cancel": "Tuhista",
+    "priceStale": "Vana ({{days}}p)",
+    "priceStaleTitle": "Viimane hind on {{days}} paeva vana",
+    "updatePrice": "Uuenda hind",
+    "updatePriceTitle": "Uuenda hind",
+    "updatePriceHint": "Viimane hind on vanem kui 7 paeva. Sisesta uuem hind.",
+    "priceDate": "Hinna kuupaev",
+    "priceValue": "Hind",
+    "priceUpdated": "Hind uuendatud",
+    "priceUpdateFailed": "Hinna uuendamine ebaonnestus",
+    "priceDateRequired": "Palun sisesta kuupaev",
+    "priceValueRequired": "Palun sisesta hind"
   }
 }
