@@ -73,7 +73,7 @@ const Navbar = () => {
             </>
           )}
 
-          <Link to="/contact">
+          {/* <Link to="/contact">
             <li
               className={`${
                 pathName === "/contact" ? "font-semibold " : ""
@@ -81,9 +81,9 @@ const Navbar = () => {
             >
               {t("nav.contact")}
             </li>
-          </Link>
+          </Link> */}
 
-          <Link to="/about">
+          {/* <Link to="/about">
             <li
               className={`py-2 cursor-pointer hover:text-slate-300 ${
                 pathName === "/about" ? "font-semibold " : ""
@@ -91,7 +91,7 @@ const Navbar = () => {
             >
               {t("nav.about")}
             </li>
-          </Link>
+          </Link> */}
 
           {token ? (
             <>

@@ -188,7 +188,9 @@
     "priceUpdated": "Price updated",
     "priceUpdateFailed": "Failed to update price",
     "priceDateRequired": "Please enter a date",
-    "priceValueRequired": "Please enter a price"
+    "priceValueRequired": "Please enter a price",
+    "ofPortfolio": "{{pct}} of portfolio",
+    "portfolioShare": "Share of portfolio"
 
 
   },

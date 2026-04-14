@@ -36,7 +36,7 @@ const App = () => {
         <Toaster position="bottom-center" reverseOrder={false} />
         <main className="flex-1">
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />

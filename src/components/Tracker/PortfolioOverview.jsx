@@ -73,12 +73,20 @@ const PortfolioOverview = () => {
           for (const b of p.cashBalances || []) {
             const cur = b.currency;
             const amt = Number(b.balance ?? 0);
-            cashMap.set(cur, Number(cashMap.get(cur) ?? 0) + amt);
+            const baseAmt = b.baseBalance == null ? null : Number(b.baseBalance ?? 0);
+            const prev = cashMap.get(cur) || { balance: 0, baseBalance: 0, baseMissing: false };
+            const baseMissing = prev.baseMissing || baseAmt == null || !Number.isFinite(baseAmt);
+            cashMap.set(cur, {
+              balance: Number(prev.balance) + amt,
+              baseBalance: baseMissing ? 0 : Number(prev.baseBalance) + baseAmt,
+              baseMissing,
+            });
           }
         }
-        const cashBalances = Array.from(cashMap.entries()).map(([currency, balance]) => ({
+        const cashBalances = Array.from(cashMap.entries()).map(([currency, v]) => ({
           currency,
-          balance,
+          balance: v.balance,
+          baseBalance: v.baseMissing ? null : v.baseBalance,
         }));
 
         const totalsMap = new Map();
@@ -258,6 +266,28 @@ const PortfolioOverview = () => {
       Number(perfCurrencyImpact ?? 0)
     );
   }, [perf, perfCurrencyImpact]);
+
+  const perfCostBasisBase = useMemo(() => {
+    return (assetPerf || []).reduce((s, r) => s + Number(r.openCostBasisBase ?? 0), 0);
+  }, [assetPerf]);
+
+  const formatRoiPct = (value) => {
+    const base = Number(perfCostBasisBase ?? 0);
+    const v = Number(value ?? 0);
+    if (!Number.isFinite(base) || base === 0 || !Number.isFinite(v)) return null;
+    const pct = (v / base) * 100;
+    if (!Number.isFinite(pct)) return null;
+    return `${Math.round(pct * 100) / 100}%`;
+  };
+
+  const formatPctOfPortfolio = (value) => {
+    const total = Number(perf?.portfolioValue ?? 0);
+    const v = Number(value ?? 0);
+    if (!Number.isFinite(total) || total === 0 || !Number.isFinite(v)) return null;
+    const pct = (v / total) * 100;
+    if (!Number.isFinite(pct)) return null;
+    return `${Math.round(pct * 100) / 100}%`;
+  };
 
   const assetLinkQs = useMemo(() => {
     const params = new URLSearchParams();
@@ -459,6 +489,9 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perfCapitalGrowth || 0) * 100) / 100)}
                   </div>
+                  {formatRoiPct(perfCapitalGrowth) && (
+                    <div className="text-xs text-slate-500">{formatRoiPct(perfCapitalGrowth)}</div>
+                  )}
                 </div>
 
                 <div>
@@ -466,6 +499,9 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.fees || 0) * 100) / 100)}
                   </div>
+                  {formatRoiPct(perf.fees) && (
+                    <div className="text-xs text-slate-500">{formatRoiPct(perf.fees)}</div>
+                  )}
                 </div>
 
                 <div>
@@ -473,6 +509,9 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.income || 0) * 100) / 100)}
                   </div>
+                  {formatRoiPct(perf.income) && (
+                    <div className="text-xs text-slate-500">{formatRoiPct(perf.income)}</div>
+                  )}
                 </div>
 
                 <div>
@@ -480,6 +519,9 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perfCurrencyImpact || 0) * 100) / 100)}
                   </div>
+                  {formatRoiPct(perfCurrencyImpact) && (
+                    <div className="text-xs text-slate-500">{formatRoiPct(perfCurrencyImpact)}</div>
+                  )}
                 </div>
 
                 <div>
@@ -487,6 +529,9 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.totalReturn || 0) * 100) / 100)}
                   </div>
+                  {formatRoiPct(perf.totalReturn) && (
+                    <div className="text-xs text-slate-500">{formatRoiPct(perf.totalReturn)}</div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -530,6 +575,7 @@ const PortfolioOverview = () => {
                   <tr className="text-left">
                     <th className="p-3">{t("tracker.currency")}</th>
                     <th className="p-3">{t("tracker.balance")}</th>
+                    <th className="p-3">{t("tracker.portfolioShare") ?? "Share of portfolio"}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -541,12 +587,15 @@ const PortfolioOverview = () => {
                         </Link>
                       </td>
                       <td className="p-3 font-mono">{String(Math.round(b.balance * 100) / 100)}</td>
+                      <td className="p-3 font-mono">
+                        {formatPctOfPortfolio(b.baseBalance) || t("tracker.na")}
+                      </td>
                     </tr>
                   ))}
 
                   {(portfolio.cashBalances || []).length === 0 && (
                     <tr className="border-t">
-                      <td className="p-3 text-slate-600" colSpan={2}>
+                      <td className="p-3 text-slate-600" colSpan={3}>
                         {t("tracker.noCashBalances")}
                       </td>
                     </tr>
@@ -592,73 +641,80 @@ const PortfolioOverview = () => {
                       <th className="p-3">{t("tracker.costBaseEur") ?? "Cost base (EUR)"}</th>
                       <th className="p-3">{t("tracker.marketValueEur") ?? "Market value (EUR)"}</th>
                       <th className="p-3">{t("tracker.totalReturnEur") ?? "Total return (EUR)"}</th>
+                      <th className="p-3">{t("tracker.portfolioShare") ?? "Share of portfolio"}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {(assetPerf || []).map((p) => (
-                      <tr key={p.assetId} className="border-t">
-                        <td className="p-3">
-                          <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
-                            {p.assetSymbol}
-                          </Link>
-                        </td>
-                        <td className="p-3">
-                          <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
-                            {p.assetName}
-                          </Link>
-                        </td>
+                    {(assetPerf || []).map((p) => {
+                      const sharePct = formatPctOfPortfolio(p.marketValueBase);
+                      return (
+                        <tr key={p.assetId} className="border-t">
+                          <td className="p-3">
+                            <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
+                              {p.assetSymbol}
+                            </Link>
+                          </td>
+                          <td className="p-3">
+                            <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
+                              {p.assetName}
+                            </Link>
+                          </td>
 
-                        {/* Price in original currency */}
-                        <td className="p-3 font-mono">
-                          <div className="flex items-center gap-2">
-                            <span>
-                              {p.lastPrice == null
-                                ? t("tracker.na")
-                                : String(Math.round(Number(p.lastPrice) * 100) / 100)}{" "}
-                              {p.currency ?? ""}
-                            </span>
-                            {isPriceStale(p) && (
-                              <button
-                                type="button"
-                                className="text-xs text-red-600 underline"
-                                title={t("tracker.priceStaleTitle", {
-                                  days: getPriceAgeDays(p),
-                                })}
-                                onClick={() => openPriceModal(p)}
-                              >
-                                {t("tracker.priceStale", { days: getPriceAgeDays(p) })}
-                              </button>
-                            )}
-                          </div>
-                        </td>
+                          {/* Price in original currency */}
+                          <td className="p-3 font-mono">
+                            <div className="flex items-center gap-2">
+                              <span>
+                                {p.lastPrice == null
+                                  ? t("tracker.na")
+                                  : String(Math.round(Number(p.lastPrice) * 100) / 100)}{" "}
+                                {p.currency ?? ""}
+                              </span>
+                              {isPriceStale(p) && (
+                                <button
+                                  type="button"
+                                  className="text-xs text-red-600 underline"
+                                  title={t("tracker.priceStaleTitle", {
+                                    days: getPriceAgeDays(p),
+                                  })}
+                                  onClick={() => openPriceModal(p)}
+                                >
+                                  {t("tracker.priceStale", { days: getPriceAgeDays(p) })}
+                                </button>
+                              )}
+                            </div>
+                          </td>
 
-                        <td className="p-3 font-mono">
-                          {String(Math.round(Number(p.quantity ?? 0) * 100) / 100)}
-                        </td>
+                          <td className="p-3 font-mono">
+                            {String(Math.round(Number(p.quantity ?? 0) * 100) / 100)}
+                          </td>
 
-                        {/* Cost base (EUR) */}
-                        <td className="p-3 font-mono">
-                          {String(Math.round(Number(p.openCostBasisBase ?? 0) * 100) / 100)}{" "}
-                          {p.baseCurrency ?? "EUR"}
-                        </td>
+                          {/* Cost base (EUR) */}
+                          <td className="p-3 font-mono">
+                            {String(Math.round(Number(p.openCostBasisBase ?? 0) * 100) / 100)}{" "}
+                            {p.baseCurrency ?? "EUR"}
+                          </td>
 
-                        {/* Market value (EUR) */}
-                        <td className="p-3 font-mono">
-                          {String(Math.round(Number(p.marketValueBase ?? 0) * 100) / 100)}{" "}
-                          {p.baseCurrency ?? "EUR"}
-                        </td>
+                          {/* Market value (EUR) */}
+                          <td className="p-3 font-mono">
+                            {String(Math.round(Number(p.marketValueBase ?? 0) * 100) / 100)}{" "}
+                            {p.baseCurrency ?? "EUR"}
+                          </td>
 
-                        {/* Total return (EUR) */}
-                        <td className="p-3 font-mono">
-                          {String(Math.round(Number(p.totalReturnBase ?? 0) * 100) / 100)}{" "}
-                          {p.baseCurrency ?? "EUR"}
-                        </td>
-                      </tr>
-                    ))}
+                          {/* Total return (EUR) */}
+                          <td className="p-3 font-mono">
+                            {String(Math.round(Number(p.totalReturnBase ?? 0) * 100) / 100)}{" "}
+                            {p.baseCurrency ?? "EUR"}
+                          </td>
+
+                          {/* Share of portfolio */}
+                          <td className="p-3 font-mono">{sharePct || t("tracker.na")}</td>
+                        </tr>
+                      );
+                    })}
 
                     {(assetPerf || []).length === 0 && (
                       <tr className="border-t">
-                        <td className="p-3 text-slate-600" colSpan={7}>
+                        <td className="p-3 text-slate-600" colSpan={8}>
                           {t("tracker.noPositions")}
                         </td>
                       </tr>

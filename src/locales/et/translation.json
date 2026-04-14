@@ -18,7 +18,7 @@
     "services": "Teenused",
     "contact": "Kontakt",
     "privacy": "Privaatsuspoliitika",
-    "rights": "Koik oigused kaitstud."
+    "rights": "Kõik õigused kaitstud."
   },
   "landing": {
     "title": "Muuda oma moed turvalisteks ja korrastatud markmeteks kiiremini.",
@@ -111,6 +111,8 @@
     "priceUpdated": "Hind uuendatud",
     "priceUpdateFailed": "Hinna uuendamine ebaonnestus",
     "priceDateRequired": "Palun sisesta kuupaev",
-    "priceValueRequired": "Palun sisesta hind"
+    "priceValueRequired": "Palun sisesta hind",
+    "ofPortfolio": "{{pct}} portfellist",
+    "portfolioShare": "Osakaal portfellist"
   }
 }
