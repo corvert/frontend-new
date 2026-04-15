@@ -40,7 +40,7 @@ const CreateAccount = () => {
   };
 
   return (
-    <div className="p-6 max-w-xl">
+    <div className="p-6 max-w-xl w-full mx-auto">
       <div className="flex items-center justify-between gap-3 mb-4">
         <h1 className="text-2xl font-bold">{t("tracker.addAccount")}</h1>
         <button

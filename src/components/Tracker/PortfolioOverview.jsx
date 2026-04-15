@@ -21,6 +21,12 @@ const PortfolioOverview = () => {
   const [loadingPerf, setLoadingPerf] = useState(false);
   const [assetPerf, setAssetPerf] = useState([]);
   const [loadingAssetPerf, setLoadingAssetPerf] = useState(false);
+  const [series, setSeries] = useState([]);
+  const [loadingSeries, setLoadingSeries] = useState(false);
+  const [seriesFrom, setSeriesFrom] = useState("");
+  const [seriesTo, setSeriesTo] = useState("");
+  const [seriesInterval, setSeriesInterval] = useState("DAILY");
+  const [seriesPreset, setSeriesPreset] = useState("ALL");
   const [priceModalOpen, setPriceModalOpen] = useState(false);
   const [priceAsset, setPriceAsset] = useState(null);
   const [priceValue, setPriceValue] = useState("");
@@ -189,6 +195,31 @@ const PortfolioOverview = () => {
     }
   };
 
+  const loadPortfolioSeries = async (accountIdOrAll, from, to, interval) => {
+    if (!accountIdOrAll) return;
+    if (accountIdOrAll === "ALL" && (!accounts || accounts.length === 0)) return;
+
+    setLoadingSeries(true);
+    try {
+      const scope = accountIdOrAll === "ALL" ? "ALL" : "ACCOUNT";
+      const params = new URLSearchParams();
+      params.set("scope", scope);
+      if (scope === "ACCOUNT") params.set("accountId", String(accountIdOrAll));
+      if (from) params.set("from", from);
+      if (to) params.set("to", to);
+      if (interval) params.set("interval", interval);
+
+      const res = await api.get(`/performance/portfolio-series?${params.toString()}`);
+      setSeries(res.data || []);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.chartLoadFailed") ?? "Failed to load chart");
+      setSeries([]);
+    } finally {
+      setLoadingSeries(false);
+    }
+  };
+
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -204,6 +235,18 @@ const PortfolioOverview = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId, asOf, accounts]);
+
+  useEffect(() => {
+    if (asOf && seriesPreset !== "CUSTOM") {
+      setSeriesTo(asOf);
+    }
+  }, [asOf, seriesPreset]);
+
+  useEffect(() => {
+    if (!selectedAccountId) return;
+    loadPortfolioSeries(selectedAccountId, seriesFrom, seriesTo, seriesInterval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedAccountId, seriesFrom, seriesTo, seriesInterval, accounts]);
 
   const sortedPositions = useMemo(() => {
     const positions = portfolio?.positions || [];
@@ -287,6 +330,89 @@ const PortfolioOverview = () => {
     const pct = (v / total) * 100;
     if (!Number.isFinite(pct)) return null;
     return `${Math.round(pct * 100) / 100}%`;
+  };
+
+  const formatChartDate = (dateStr) => {
+    if (!dateStr) return "";
+    const parts = String(dateStr).split("-");
+    if (parts.length !== 3) return String(dateStr);
+    const [y, m, d] = parts;
+    return `${d}.${m}.${y.slice(2)}`;
+  };
+
+  const chartPoints = useMemo(() => {
+    const data = (series || []).filter((p) => p && p.portfolioValue != null);
+    const values = data.map((p) => Number(p.portfolioValue ?? 0)).filter(Number.isFinite);
+    if (values.length === 0) return null;
+
+    const min = Math.min(...values);
+    const max = Math.max(...values);
+    const range = max - min || 1;
+
+    const width = 1000;
+    const height = 220;
+    const padX = 24;
+    const padY = 24;
+    const plotW = width - padX * 2;
+    const plotH = height - padY * 2;
+
+    const points = data.map((p, i) => {
+      const x = padX + (plotW * i) / Math.max(1, data.length - 1);
+      const y = padY + plotH * (1 - (Number(p.portfolioValue) - min) / range);
+      return `${x},${y}`;
+    });
+
+    const area = `M ${padX},${height - padY} L ${points.join(" L ")} L ${padX + plotW},${height - padY} Z`;
+
+    const xTickCount = Math.min(10, data.length);
+    const xTickSet = new Set();
+    const xTicks = [];
+    for (let i = 0; i < xTickCount; i += 1) {
+      const idx = Math.round((i * (data.length - 1)) / Math.max(1, xTickCount - 1));
+      if (xTickSet.has(idx)) continue;
+      xTickSet.add(idx);
+      const x = padX + (plotW * idx) / Math.max(1, data.length - 1);
+      xTicks.push({ x, label: formatChartDate(data[idx]?.date) });
+    }
+
+    const yTickCount = 5;
+    const yTicks = [];
+    for (let i = 0; i < yTickCount; i += 1) {
+      const value = min + (range * i) / Math.max(1, yTickCount - 1);
+      const y = padY + plotH * (1 - (value - min) / range);
+      yTicks.push({ y, label: Math.round(value * 100) / 100 });
+    }
+
+    return {
+      points: points.join(" "),
+      area,
+      xTicks,
+      yTicks,
+      height,
+      width,
+    };
+  }, [series]);
+
+  const onPresetChange = (value) => {
+    setSeriesPreset(value);
+    if (value === "ALL") {
+      setSeriesFrom("");
+      setSeriesTo(asOf || "");
+      return;
+    }
+
+    const end = asOf || new Date().toISOString().slice(0, 10);
+    const endDate = new Date(`${end}T00:00:00`);
+    const startDate = new Date(endDate);
+
+    if (value === "1M") startDate.setMonth(startDate.getMonth() - 1);
+    if (value === "3M") startDate.setMonth(startDate.getMonth() - 3);
+    if (value === "6M") startDate.setMonth(startDate.getMonth() - 6);
+    if (value === "1Y") startDate.setFullYear(startDate.getFullYear() - 1);
+
+    const start = startDate.toISOString().slice(0, 10);
+    setSeriesFrom(start);
+    setSeriesTo(end);
   };
 
   const assetLinkQs = useMemo(() => {
@@ -467,6 +593,115 @@ const PortfolioOverview = () => {
         <div>{t("tracker.portfolioMissing")}</div>
       ) : (
         <>
+          {/* Portfolio value chart */}
+          <div className="border rounded p-4 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <div className="font-semibold">{t("tracker.portfolioValueChart")}</div>
+
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <label className="text-slate-600">{t("tracker.rangePreset")}</label>
+                <select
+                  value={seriesPreset}
+                  onChange={(e) => onPresetChange(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="ALL">{t("tracker.rangeAll")}</option>
+                  <option value="1M">{t("tracker.range1m")}</option>
+                  <option value="3M">{t("tracker.range3m")}</option>
+                  <option value="6M">{t("tracker.range6m")}</option>
+                  <option value="1Y">{t("tracker.range1y")}</option>
+                  <option value="CUSTOM">{t("tracker.rangeCustom")}</option>
+                </select>
+
+                <label className="text-slate-600">{t("tracker.rangeFrom")}</label>
+                <input
+                  type="date"
+                  value={seriesFrom}
+                  onChange={(e) => {
+                    setSeriesFrom(e.target.value);
+                    setSeriesPreset("CUSTOM");
+                  }}
+                  className="border rounded px-2 py-1"
+                />
+
+                <label className="text-slate-600">{t("tracker.rangeTo")}</label>
+                <input
+                  type="date"
+                  value={seriesTo}
+                  onChange={(e) => {
+                    setSeriesTo(e.target.value);
+                    setSeriesPreset("CUSTOM");
+                  }}
+                  className="border rounded px-2 py-1"
+                />
+
+                <label className="text-slate-600">{t("tracker.interval")}</label>
+                <select
+                  value={seriesInterval}
+                  onChange={(e) => setSeriesInterval(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="DAILY">{t("tracker.intervalDaily")}</option>
+                  <option value="WEEKLY">{t("tracker.intervalWeekly")}</option>
+                  <option value="MONTHLY">{t("tracker.intervalMonthly")}</option>
+                </select>
+              </div>
+            </div>
+
+            {loadingSeries ? (
+              <div className="text-sm text-slate-600">{t("tracker.chartLoading")}</div>
+            ) : chartPoints ? (
+              <div>
+                <svg
+                  viewBox={`0 0 ${chartPoints.width} ${chartPoints.height}`}
+                  className="w-full h-56"
+                  role="img"
+                  aria-label={t("tracker.portfolioValueChart")}
+                >
+                  <defs>
+                    <linearGradient id="portfolioArea" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.35" />
+                      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.05" />
+                    </linearGradient>
+                  </defs>
+                  <path d={chartPoints.area} fill="url(#portfolioArea)" stroke="none" />
+                  <polyline
+                    fill="none"
+                    stroke="#3b82f6"
+                    strokeWidth="3"
+                    points={chartPoints.points}
+                  />
+                  {chartPoints.yTicks.map((tick) => (
+                    <text
+                      key={`y-${tick.y}`}
+                      x={chartPoints.width - 8}
+                      y={tick.y + 4}
+                      fill="#94a3b8"
+                      fontSize="12"
+                      textAnchor="end"
+                    >
+                      {tick.label}
+                    </text>
+                  ))}
+                  {chartPoints.xTicks.map((tick, idx) => (
+                    <text
+                      key={`x-${idx}`}
+                      x={tick.x}
+                      y={chartPoints.height - 6}
+                      fill="#94a3b8"
+                      fontSize="12"
+                      textAnchor="middle"
+                    >
+                      {tick.label}
+                    </text>
+                  ))}
+                </svg>
+              </div>
+            ) : (
+              <div className="text-sm text-slate-600">{t("tracker.chartNoData")}</div>
+            )}
+          </div>
+
           {/* Base totals */}
           <div className="border rounded p-4 mb-6">
             <div className="font-semibold mb-2">{t("tracker.performanceTitle")}</div>
@@ -476,7 +711,7 @@ const PortfolioOverview = () => {
             ) : !perf ? (
               <div className="text-sm text-slate-600">{t("tracker.performanceMissing")}</div>
             ) : perf.complete ? (
-              <div className="grid sm:grid-cols-3 grid-cols-2 gap-3 text-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
                 <div>
                   <div className="text-slate-600">{t("tracker.portfolioValue")}</div>
                   <div className="font-mono">
