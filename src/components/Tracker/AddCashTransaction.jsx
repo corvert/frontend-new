@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 
 const CASH_TYPES = ["DEPOSIT", "WITHDRAW", "TRADE", "FEE", "DIVIDEND", "INTEREST"];
+const P2P_TYPES = ["DEPOSIT", "WITHDRAW"];
 
 const AddCashTransaction = () => {
   const { t } = useTranslation();
@@ -57,6 +58,24 @@ const AddCashTransaction = () => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectedAccount = useMemo(() => {
+    return accounts.find((a) => String(a.id) === String(form.accountId)) || null;
+  }, [accounts, form.accountId]);
+
+  const isP2pAccount = selectedAccount?.accountKind === "P2P";
+  const allowedTypes = isP2pAccount ? P2P_TYPES : CASH_TYPES;
+
+  useEffect(() => {
+    if (!isP2pAccount) return;
+    if (!allowedTypes.includes(form.type)) {
+      setForm((f) => ({ ...f, type: "DEPOSIT" }));
+    }
+    if (form.currency !== "EUR") {
+      setForm((f) => ({ ...f, currency: "EUR" }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isP2pAccount, form.type]);
 
   const setField = (key, value) => setForm((f) => ({ ...f, [key]: value }));
 
@@ -125,7 +144,7 @@ const AddCashTransaction = () => {
               value={form.type}
               onChange={(e) => setField("type", e.target.value)}
             >
-              {CASH_TYPES.map((ct) => (
+              {allowedTypes.map((ct) => (
                 <option key={ct} value={ct}>
                   {t(cashTypeLabelKey[ct])}
                 </option>
@@ -152,6 +171,7 @@ const AddCashTransaction = () => {
               value={form.currency}
               onChange={(e) => setField("currency", e.target.value)}
               placeholder="EUR"
+              disabled={isP2pAccount}
             />
           </div>
 

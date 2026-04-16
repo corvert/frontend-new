@@ -132,7 +132,27 @@
     "intervalWeekly": "Nadal",
     "intervalMonthly": "Kuu",
     "chartMin": "Min",
-    "chartMax": "Max"
+    "chartMax": "Max",
+
+    "p2pTitle": "P2P konto",
+    "p2pUpdate": "Uuenda seisu",
+    "p2pUpdateTitle": "Uuenda P2P seisu",
+    "p2pUpdateHint": "Sisesta hetke raha- ja investeeringu jääk.",
+    "p2pLoading": "P2P seisu laadimine...",
+    "p2pNoSnapshot": "P2P seisu pole veel.",
+    "p2pAsOf": "Seisuga",
+    "p2pCash": "Raha jääk",
+    "p2pInvested": "Investeeritud jääk",
+    "p2pTotal": "Kokku",
+    "p2pNetDeposits": "Netosissemaksed",
+    "p2pProfit": "Teenitud tulu",
+    "p2pDateRequired": "Palun sisesta kuupäev",
+    "p2pCashRequired": "Palun sisesta raha jääk",
+    "p2pInvestedRequired": "Palun sisesta investeeringu jääk",
+    "p2pSaved": "P2P seis salvestatud",
+    "p2pSaveFailed": "P2P seisu salvestamine ebaõnnestus",
+    "p2pLoadFailed": "P2P seisu laadimine ebaõnnestus",
+    "p2pNote": "Märkus"
   },
   "asset": {
     "valueChart": "Aktsia vaartus ajas",

@@ -209,7 +209,27 @@
     "intervalWeekly": "Weekly",
     "intervalMonthly": "Monthly",
     "chartMin": "Min",
-    "chartMax": "Max"
+    "chartMax": "Max",
+
+    "p2pTitle": "P2P account",
+    "p2pUpdate": "Update balance",
+    "p2pUpdateTitle": "Update P2P balance",
+    "p2pUpdateHint": "Enter current cash and invested balances.",
+    "p2pLoading": "Loading P2P snapshot...",
+    "p2pNoSnapshot": "No P2P snapshot yet.",
+    "p2pAsOf": "As of",
+    "p2pCash": "Cash balance",
+    "p2pInvested": "Invested balance",
+    "p2pTotal": "Total balance",
+    "p2pNetDeposits": "Net deposits",
+    "p2pProfit": "Earned profit",
+    "p2pDateRequired": "Please enter a date",
+    "p2pCashRequired": "Please enter cash balance",
+    "p2pInvestedRequired": "Please enter invested balance",
+    "p2pSaved": "P2P snapshot saved",
+    "p2pSaveFailed": "Failed to save P2P snapshot",
+    "p2pLoadFailed": "Failed to load P2P snapshot",
+    "p2pNote": "Note"
 
 
   },

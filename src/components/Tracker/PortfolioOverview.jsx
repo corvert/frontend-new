@@ -37,6 +37,17 @@ const PortfolioOverview = () => {
 
   const [newAccountName, setNewAccountName] = useState("");
 
+  const [p2pSnapshot, setP2pSnapshot] = useState(null);
+  const [loadingP2p, setLoadingP2p] = useState(false);
+  const [p2pModalOpen, setP2pModalOpen] = useState(false);
+  const [p2pForm, setP2pForm] = useState({
+    asOf: "",
+    cashBalance: "",
+    investedBalance: "",
+    note: "",
+  });
+  const [savingP2p, setSavingP2p] = useState(false);
+
   const loadAccounts = async () => {
     setLoadingAccounts(true);
     try {
@@ -220,10 +231,40 @@ const PortfolioOverview = () => {
     }
   };
 
+  const loadP2pSnapshot = async (accountIdOrAll, asOfDate) => {
+    if (!accountIdOrAll || accountIdOrAll === "ALL") {
+      setP2pSnapshot(null);
+      return;
+    }
+
+    setLoadingP2p(true);
+    try {
+      const params = new URLSearchParams();
+      params.set("accountId", String(accountIdOrAll));
+      if (asOfDate) params.set("asOf", asOfDate);
+
+      const res = await api.get(`/p2p-snapshots/latest?${params.toString()}`);
+      setP2pSnapshot(res.data || null);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.p2pLoadFailed") ?? "Failed to load P2P snapshot");
+      setP2pSnapshot(null);
+    } finally {
+      setLoadingP2p(false);
+    }
+  };
+
   useEffect(() => {
     loadAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const selectedAccount = useMemo(() => {
+    return (accounts || []).find((a) => String(a.id) === String(selectedAccountId)) || null;
+  }, [accounts, selectedAccountId]);
+
+  const isP2pAccount =
+    selectedAccount?.accountKind === "P2P" && selectedAccountId && selectedAccountId !== "ALL";
 
   useEffect(() => {
     if (!selectedAccountId) return;
@@ -235,6 +276,15 @@ const PortfolioOverview = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId, asOf, accounts]);
+
+  useEffect(() => {
+    if (!isP2pAccount) {
+      setP2pSnapshot(null);
+      return;
+    }
+    loadP2pSnapshot(selectedAccountId, asOf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isP2pAccount, selectedAccountId, asOf]);
 
   useEffect(() => {
     if (asOf && seriesPreset !== "CUSTOM") {
@@ -449,6 +499,18 @@ const PortfolioOverview = () => {
     setPriceModalOpen(true);
   };
 
+  const openP2pModal = () => {
+    const today = new Date().toISOString().slice(0, 10);
+    setP2pForm({
+      asOf: asOf || p2pSnapshot?.asOf || today,
+      cashBalance: p2pSnapshot?.cashBalance != null ? String(p2pSnapshot.cashBalance) : "",
+      investedBalance:
+        p2pSnapshot?.investedBalance != null ? String(p2pSnapshot.investedBalance) : "",
+      note: p2pSnapshot?.note || "",
+    });
+    setP2pModalOpen(true);
+  };
+
   const onSavePrice = async () => {
     if (!priceAsset?.assetId) return;
     if (!priceDate) {
@@ -480,6 +542,46 @@ const PortfolioOverview = () => {
       toast.error(t("tracker.priceUpdateFailed") ?? "Failed to update price");
     } finally {
       setSavingPrice(false);
+    }
+  };
+
+  const onSaveP2pSnapshot = async () => {
+    if (!selectedAccountId || selectedAccountId === "ALL") return;
+    if (!p2pForm.asOf) {
+      toast.error(t("tracker.p2pDateRequired") ?? "Please enter a date");
+      return;
+    }
+
+    const cashNum = Number(p2pForm.cashBalance);
+    const investedNum = Number(p2pForm.investedBalance);
+    if (!Number.isFinite(cashNum) || cashNum < 0) {
+      toast.error(t("tracker.p2pCashRequired") ?? "Please enter cash balance");
+      return;
+    }
+    if (!Number.isFinite(investedNum) || investedNum < 0) {
+      toast.error(t("tracker.p2pInvestedRequired") ?? "Please enter invested balance");
+      return;
+    }
+
+    setSavingP2p(true);
+    try {
+      await api.post("/p2p-snapshots", {
+        accountId: Number(selectedAccountId),
+        asOf: p2pForm.asOf,
+        cashBalance: cashNum,
+        investedBalance: investedNum,
+        note: p2pForm.note?.trim() || null,
+      });
+      toast.success(t("tracker.p2pSaved") ?? "P2P snapshot saved");
+      setP2pModalOpen(false);
+      await loadP2pSnapshot(selectedAccountId, asOf);
+      loadPortfolio(selectedAccountId, asOf);
+      loadPerformance(selectedAccountId, asOf);
+    } catch (e) {
+      console.error(e);
+      toast.error(t("tracker.p2pSaveFailed") ?? "Failed to save P2P snapshot");
+    } finally {
+      setSavingP2p(false);
     }
   };
 
@@ -785,6 +887,64 @@ const PortfolioOverview = () => {
             )}
           </div>
 
+          {isP2pAccount && (
+            <div className="border rounded p-4 mb-6">
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="font-semibold">{t("tracker.p2pTitle")}</div>
+                <button
+                  type="button"
+                  onClick={openP2pModal}
+                  className="px-3 py-2 border rounded hover:bg-slate-50"
+                >
+                  {t("tracker.p2pUpdate")}
+                </button>
+              </div>
+
+              {loadingP2p ? (
+                <div className="text-sm text-slate-600">{t("tracker.p2pLoading")}</div>
+              ) : !p2pSnapshot ? (
+                <div className="text-sm text-slate-600">{t("tracker.p2pNoSnapshot")}</div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pAsOf")}</div>
+                    <div className="font-mono">{p2pSnapshot.asOf}</div>
+                  </div>
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pCash")}</div>
+                    <div className="font-mono">
+                      {String(Math.round(Number(p2pSnapshot.cashBalance || 0) * 100) / 100)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pInvested")}</div>
+                    <div className="font-mono">
+                      {String(Math.round(Number(p2pSnapshot.investedBalance || 0) * 100) / 100)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pTotal")}</div>
+                    <div className="font-mono">
+                      {String(Math.round(Number(p2pSnapshot.totalBalance || 0) * 100) / 100)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pNetDeposits")}</div>
+                    <div className="font-mono">
+                      {String(Math.round(Number(p2pSnapshot.netDeposits || 0) * 100) / 100)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-slate-600">{t("tracker.p2pProfit")}</div>
+                    <div className="font-mono">
+                      {String(Math.round(Number(p2pSnapshot.profit || 0) * 100) / 100)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Cash balances */}
           <div className="border rounded overflow-hidden mb-6">
             <div className="p-4 font-semibold border-b flex justify-between items-center">
@@ -1033,6 +1193,59 @@ const PortfolioOverview = () => {
                     step="0.0001"
                     value={priceValue}
                     onChange={(e) => setPriceValue(e.target.value)}
+                    className="w-full border rounded px-3 py-2 bg-white text-slate-900"
+                  />
+                </div>
+              </div>
+            </PopModal>
+
+            <PopModal
+              open={p2pModalOpen}
+              setOpen={setP2pModalOpen}
+              title={t("tracker.p2pUpdateTitle")}
+              message={t("tracker.p2pUpdateHint")}
+              confirmText={t("tracker.p2pUpdate")}
+              cancelText={t("tracker.cancel") ?? "Cancel"}
+              onConfirm={onSaveP2pSnapshot}
+              confirmLoading={savingP2p}
+              confirmClassName="px-4 py-2 bg-btnColor text-white rounded-md hover:opacity-90"
+              showWarningIcon={false}
+            >
+              <div className="mt-4 grid gap-3">
+                <div>
+                  <label className="text-sm text-white">{t("tracker.p2pAsOf")}</label>
+                  <input
+                    type="date"
+                    value={p2pForm.asOf}
+                    onChange={(e) => setP2pForm((f) => ({ ...f, asOf: e.target.value }))}
+                    className="w-full border rounded px-3 py-2 bg-white text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-white">{t("tracker.p2pCash")}</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={p2pForm.cashBalance}
+                    onChange={(e) => setP2pForm((f) => ({ ...f, cashBalance: e.target.value }))}
+                    className="w-full border rounded px-3 py-2 bg-white text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-white">{t("tracker.p2pInvested")}</label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={p2pForm.investedBalance}
+                    onChange={(e) => setP2pForm((f) => ({ ...f, investedBalance: e.target.value }))}
+                    className="w-full border rounded px-3 py-2 bg-white text-slate-900"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-white">{t("tracker.p2pNote")}</label>
+                  <input
+                    value={p2pForm.note}
+                    onChange={(e) => setP2pForm((f) => ({ ...f, note: e.target.value }))}
                     className="w-full border rounded px-3 py-2 bg-white text-slate-900"
                   />
                 </div>
