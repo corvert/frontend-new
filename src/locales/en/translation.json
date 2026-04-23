@@ -315,6 +315,7 @@
     "name": "Name",
     "namePlaceholder": "e.g. Apple Inc.",
     "nameRequired": "Please enter a name",
+    "symbolOrIsinRequired": "Either symbol or ISIN is required",
     "symbol": "Symbol",
     "isin": "ISIN",
     "currency": "Currency",

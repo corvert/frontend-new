@@ -33,6 +33,11 @@ const AddAsset = () => {
       return;
     }
 
+    if (form.type !== "P2P" && !form.symbol.trim() && !form.isin.trim()) {
+      toast.error(t("asset.symbolOrIsinRequired") ?? "Either symbol or ISIN is required");
+      return;
+    }
+
     try {
       const res = await api.post("/assets", {
         type: form.type,
@@ -60,7 +65,7 @@ const AddAsset = () => {
   };
 
   return (
-     <div className="p-6 max-w-xl w-full mx-auto">
+    <div className="p-6 max-w-xl w-full mx-auto">
       <h1 className="text-2xl font-bold mb-6">{t("asset.title")}</h1>
 
       <form onSubmit={onSubmit} className="grid gap-3">
@@ -124,7 +129,11 @@ const AddAsset = () => {
           <button type="submit" className="bg-btnColor text-white px-4 py-2 rounded font-semibold">
             {t("asset.submit")}
           </button>
-          <button type="button" onClick={() => navigate(returnTo)} className="px-4 py-2 border rounded">
+          <button
+            type="button"
+            onClick={() => navigate(returnTo)}
+            className="px-4 py-2 border rounded"
+          >
             {t("asset.cancel")}
           </button>
         </div>

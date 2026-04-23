@@ -43,7 +43,10 @@ const AddTrade = () => {
       setAssets(assetList);
 
       if (!form.accountId && accList.length > 0) {
-        setForm((f) => ({ ...f, accountId: String(accList[0].id) }));
+        const nonP2p = accList.find((a) => a.accountKind !== "P2P") || null;
+        if (nonP2p) {
+          setForm((f) => ({ ...f, accountId: String(nonP2p.id) }));
+        }
       }
       if (!form.assetId && assetList.length > 0) {
         setForm((f) => ({ ...f, assetId: String(assetList[0].id) }));
@@ -60,6 +63,18 @@ const AddTrade = () => {
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const tradeAccounts = useMemo(() => {
+    return (accounts || []).filter((a) => a.accountKind !== "P2P");
+  }, [accounts]);
+
+  useEffect(() => {
+    if (!form.accountId) return;
+    const exists = tradeAccounts.some((a) => String(a.id) === String(form.accountId));
+    if (!exists && tradeAccounts.length > 0) {
+      setForm((f) => ({ ...f, accountId: String(tradeAccounts[0].id) }));
+    }
+  }, [form.accountId, tradeAccounts]);
 
   const sortedAssets = useMemo(() => {
     return [...(assets || [])].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
@@ -117,7 +132,7 @@ const AddTrade = () => {
             value={form.accountId}
             onChange={(e) => setField("accountId", e.target.value)}
           >
-            {accounts.map((a) => (
+            {tradeAccounts.map((a) => (
               <option key={a.id} value={String(a.id)}>
                 {a.accountName ?? t("tracker.accountFallback", { id: a.id })}
               </option>

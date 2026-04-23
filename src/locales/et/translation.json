@@ -155,6 +155,7 @@
     "p2pNote": "Märkus"
   },
   "asset": {
+    "symbolOrIsinRequired": "Sisesta kas sümbol või ISIN",
     "valueChart": "Aktsia vaartus ajas",
     "chartLoading": "Graafiku laadimine...",
     "chartNoData": "Valitud vahemikus andmeid ei ole.",
