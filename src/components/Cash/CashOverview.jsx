@@ -206,6 +206,24 @@ const CashOverview = () => {
           >
             {t("cash.add")}
           </button>
+          <button
+            type="button"
+            onClick={() =>
+              navigate(`/cash-exchange/new?accountId=${encodeURIComponent(selectedAccountId)}`)
+            }
+            className="px-4 py-2 border rounded"
+          >
+            {t("cash.exchange")}
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              navigate(`/cash-transfer/new?fromAccountId=${encodeURIComponent(selectedAccountId)}`)
+            }
+            className="px-4 py-2 border rounded"
+          >
+            {t("cash.transfer")}
+          </button>
         </div>
       </div>
 

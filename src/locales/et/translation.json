@@ -100,6 +100,7 @@
     "resetError": "Parooli uuendamine ebaonnestus. Proovi uuesti."
   },
   "tracker": {
+    "allAccounts": "Kõik kontod",
     "cancel": "Tuhista",
     "priceStale": "Vana ({{days}}p)",
     "priceStaleTitle": "Viimane hind on {{days}} paeva vana",
@@ -174,5 +175,32 @@
     "intervalDaily": "Paev",
     "intervalWeekly": "Nadal",
     "intervalMonthly": "Kuu"
+  },
+  "cash": {
+    "exchange": "Valuuta vahetus",
+    "transfer": "Ülekanne kontode vahel",
+    "exchangeTitle": "Valuuta vahetus",
+    "exchangeSellCurrency": "Müüdav valuuta",
+    "exchangeSellAmount": "Müüdav summa",
+    "exchangeBuyCurrency": "Ostetav valuuta",
+    "exchangeBuyAmount": "Ostetav summa",
+    "exchangeFee": "Vahetustasu",
+    "exchangeRate": "Kurss",
+    "exchangeSameCurrency": "Müüdav ja ostetav valuuta peavad erinema",
+    "sellAmountRequired": "Palun sisesta müüdav summa",
+    "buyAmountRequired": "Palun sisesta ostetav summa",
+    "feeNonNegative": "Vahetustasu ei tohi olla negatiivne",
+    "exchangeCreated": "Valuuta vahetus salvestatud",
+    "exchangeCreateFailed": "Valuuta vahetuse salvestamine ebaonnestus",
+    "transferTitle": "Ülekanne",
+    "transferFrom": "Konto (saatja)",
+    "transferTo": "Konto (saaja)",
+    "transferAmount": "Summa",
+    "transferCurrency": "Valuuta",
+    "transferCreated": "Ulekanne salvestatud",
+    "transferCreateFailed": "Ülekande salvestamine ebaonnestus",
+    "transferSameAccount": "Vali erinevad kontod",
+    "transferToRequired": "Palun vali sihtkonto",
+    "transferAmountRequired": "Palun sisesta summa"
   }
 }

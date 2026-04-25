@@ -28,8 +28,19 @@ const AssetDetails = () => {
   const [seriesInterval, setSeriesInterval] = useState("DAILY");
   const [seriesPreset, setSeriesPreset] = useState("ALL");
 
+  const [accounts, setAccounts] = useState([]);
   const [trades, setTrades] = useState([]);
   const [cashTx, setCashTx] = useState([]);
+
+  const loadAccounts = async () => {
+    try {
+      const res = await api.get("/accounts");
+      setAccounts(res.data || []);
+    } catch (e) {
+      console.error(e);
+      setAccounts([]);
+    }
+  };
 
   const loadSummary = async () => {
     const scope = accountId === "ALL" ? "ALL" : "ACCOUNT";
@@ -135,9 +146,16 @@ const AssetDetails = () => {
   };
 
   useEffect(() => {
+    loadAccounts();
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assetId, accountId, to]);
+
+  const selectedAccountName = useMemo(() => {
+    if (accountId === "ALL") return t("tracker.allAccounts") ?? "All accounts";
+    const match = (accounts || []).find((a) => String(a.id) === String(accountId));
+    return match?.accountName ?? t("tracker.accountFallback", { id: accountId });
+  }, [accounts, accountId, t]);
 
   useEffect(() => {
     if (to && seriesPreset !== "CUSTOM") {
@@ -467,8 +485,7 @@ const AssetDetails = () => {
           <div className="text-slate-600 text-sm">
             {t("asset.asOf") ?? "As of"}:{" "}
             {formatDdMmYyyyDot(to || new Date().toISOString().slice(0, 10))} •{" "}
-            {t("tracker.accountLabel")}:{" "}
-            {accountId === "ALL" ? t("tracker.accountName") : accountId}
+            {t("tracker.accountLabel")}: {selectedAccountName}
           </div>
         </div>
 
