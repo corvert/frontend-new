@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import api from "../../services/api";
 import { formatDdMmYyyyDot } from "../../utils/dateFormat";
+import { DataGrid } from "@mui/x-data-grid";
 
 const round2 = (n) => Math.round(Number(n || 0) * 100) / 100;
 
@@ -329,6 +330,108 @@ const AssetDetails = () => {
     );
   }, [cashTx]);
 
+  const tradeRows = useMemo(() => {
+    return tradesSorted.map((tr) => ({
+      id: tr.id ?? `${tr.executedAt}-${tr.side}-${tr.quantity}-${tr.price}`,
+      executedAt: tr.executedAt,
+      side: tr.side,
+      quantity: tr.quantity,
+      price: tr.price,
+      fee: tr.fee,
+      currency: tr.currency ?? assetRow?.currency ?? "",
+      note: tr.note ?? "",
+    }));
+  }, [tradesSorted, assetRow]);
+
+  const tradeColumns = useMemo(() => {
+    return [
+      {
+        field: "executedAt",
+        headerName: t("trade.date") ?? "Date",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatDdMmYyyyDot(params.row?.executedAt)}</span>
+        ),
+      },
+      { field: "side", headerName: t("trade.side") ?? "Side", flex: 0.8 },
+      {
+        field: "quantity",
+        headerName: t("trade.quantity") ?? "Qty",
+        flex: 0.9,
+        renderCell: (params) => (
+          <span className="font-mono">{String(params.row?.quantity ?? "")}</span>
+        ),
+      },
+      {
+        field: "price",
+        headerName: t("trade.price") ?? "Price",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {String(params.row?.price ?? "")} {params.row?.currency ?? ""}
+          </span>
+        ),
+      },
+      {
+        field: "fee",
+        headerName: t("trade.fee") ?? "Fee",
+        flex: 0.8,
+        renderCell: (params) => <span className="font-mono">{String(params.row?.fee ?? "")}</span>,
+      },
+      {
+        field: "transactionSum",
+        headerName: t("trade.transactionSum") ?? "Transaction Sum",
+        flex: 1.2,
+        renderCell: (params) => {
+          const qty = Number(params.row?.quantity ?? 0);
+          const price = Number(params.row?.price ?? 0);
+          const sum = Math.round(qty * price * 100) / 100;
+          return (
+            <span className="font-mono">
+              {String(sum)} {params.row?.currency ?? ""}
+            </span>
+          );
+        },
+      },
+      { field: "note", headerName: t("trade.note") ?? "Note", flex: 1.4 },
+    ];
+  }, [t, assetRow]);
+
+  const cashRows = useMemo(() => {
+    return cashSorted.map((ct) => ({
+      id: ct.id ?? `${ct.executedAt}-${ct.type}-${ct.amount}`,
+      executedAt: ct.executedAt,
+      type: ct.type,
+      currency: ct.currency,
+      amount: ct.amount,
+      note: ct.note ?? "",
+    }));
+  }, [cashSorted]);
+
+  const cashColumns = useMemo(() => {
+    return [
+      {
+        field: "executedAt",
+        headerName: t("cash.date") ?? "Date",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatDdMmYyyyDot(params.row?.executedAt)}</span>
+        ),
+      },
+      { field: "type", headerName: t("cash.type") ?? "Type", flex: 0.9 },
+      { field: "currency", headerName: t("cash.currency") ?? "Currency", flex: 0.8 },
+      {
+        field: "amount",
+        headerName: t("cash.amount") ?? "Amount",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{String(params.row?.amount ?? "")}</span>
+        ),
+      },
+      { field: "note", headerName: t("cash.note") ?? "Note", flex: 1.5 },
+    ];
+  }, [t]);
+
   if (loading) return <div className="p-6">{t("asset.loading") ?? "Loading..."}</div>;
 
   if (!assetRow) {
@@ -577,47 +680,22 @@ const AssetDetails = () => {
             </div>
           )}
         </div>
-
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left">
-                <th className="p-3">{t("trade.date") ?? "Date"}</th>
-                <th className="p-3">{t("trade.side") ?? "Side"}</th>
-                <th className="p-3">{t("trade.quantity") ?? "Qty"}</th>
-                <th className="p-3">{t("trade.price") ?? "Price"}</th>
-                <th className="p-3">{t("trade.fee") ?? "Fee"}</th>
-                <th className="p-3">{t("trade.transactionSum") ?? "Transaction Sum"}</th>
-                <th className="p-3">{t("trade.note") ?? "Note"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tradesSorted.map((tr) => (
-                <tr key={tr.id} className="border-t">
-                  <td className="p-3 font-mono">{formatDdMmYyyyDot(tr.executedAt)}</td>
-                  <td className="p-3 font-mono">{tr.side}</td>
-                  <td className="p-3 font-mono">{tr.quantity}</td>
-                  <td className="p-3 font-mono">
-                    {tr.price} {tr.currency ?? assetRow.currency ?? ""}
-                  </td>
-                  <td className="p-3 font-mono">{tr.fee ?? ""}</td>
-                  <td className="p-3 font-mono">
-                    {Math.round(Number(tr.quantity ?? 0) * Number(tr.price ?? 0) * 100) / 100}{" "}
-                    {tr.currency ?? assetRow.currency ?? ""}
-                  </td>
-                  <td className="p-3">{tr.note ?? ""}</td>
-                </tr>
-              ))}
-
-              {tradesSorted.length === 0 && (
-                <tr className="border-t">
-                  <td className="p-3 text-slate-600" colSpan={6}>
-                    {t("asset.noTrades") ?? "No trades found."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto w-full">
+          <DataGrid
+            className="w-full"
+            rows={tradeRows}
+            columns={tradeColumns}
+            autoHeight
+            disableRowSelectionOnClick
+            disableColumnResize
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 10 },
+              },
+            }}
+            localeText={{ noRowsLabel: t("asset.noTrades") ?? "No trades found." }}
+          />
         </div>
       </div>
 
@@ -641,38 +719,22 @@ const AssetDetails = () => {
             {t("income.addIncome") ?? "Add income"}
           </button>
         </div>
-
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left">
-                <th className="p-3">{t("cash.date") ?? "Date"}</th>
-                <th className="p-3">{t("cash.type") ?? "Type"}</th>
-                <th className="p-3">{t("cash.currency") ?? "Currency"}</th>
-                <th className="p-3">{t("cash.amount") ?? "Amount"}</th>
-                <th className="p-3">{t("cash.note") ?? "Note"}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cashSorted.map((ct) => (
-                <tr key={ct.id} className="border-t">
-                  <td className="p-3 font-mono">{formatDdMmYyyyDot(ct.executedAt)}</td>
-                  <td className="p-3 font-mono">{ct.type}</td>
-                  <td className="p-3 font-mono">{ct.currency}</td>
-                  <td className="p-3 font-mono">{ct.amount}</td>
-                  <td className="p-3">{ct.note ?? ""}</td>
-                </tr>
-              ))}
-
-              {cashSorted.length === 0 && (
-                <tr className="border-t">
-                  <td className="p-3 text-slate-600" colSpan={5}>
-                    {t("asset.noCashflows") ?? "No cashflows found."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto w-full">
+          <DataGrid
+            className="w-full"
+            rows={cashRows}
+            columns={cashColumns}
+            autoHeight
+            disableRowSelectionOnClick
+            disableColumnResize
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 10 },
+              },
+            }}
+            localeText={{ noRowsLabel: t("asset.noCashflows") ?? "No cashflows found." }}
+          />
         </div>
       </div>
     </div>
