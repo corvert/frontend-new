@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMyContext } from "../../store/ContextApi";
 import PopModal from "../PopModal";
+import { DataGrid } from "@mui/x-data-grid";
 
 const PortfolioOverview = () => {
   const { t } = useTranslation();
@@ -375,7 +376,8 @@ const PortfolioOverview = () => {
 
   const formatPctOfPortfolio = (value) => {
     const total = Number(perf?.portfolioValue ?? 0);
-    const v = Number(value ?? 0);
+    if (value == null) return null;
+    const v = Number(value);
     if (!Number.isFinite(total) || total === 0 || !Number.isFinite(v)) return null;
     const pct = (v / total) * 100;
     if (!Number.isFinite(pct)) return null;
@@ -499,6 +501,211 @@ const PortfolioOverview = () => {
     setPriceModalOpen(true);
   };
 
+  const cashBalanceRows = useMemo(() => {
+    return (portfolio?.cashBalances || []).map((b) => ({
+      id: b.currency,
+      currency: b.currency,
+      balance: b.balance,
+      baseBalance: b.baseBalance,
+    }));
+  }, [portfolio]);
+
+  const cashBalanceColumns = useMemo(() => {
+    return [
+      {
+        field: "currency",
+        headerName: t("tracker.currency"),
+        flex: 1,
+        renderCell: (params) => (
+          <Link to="/cash" className="underline">
+            {params.value}
+          </Link>
+        ),
+      },
+      {
+        field: "balance",
+        headerName: t("tracker.balance"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {String(Math.round(Number(params.row?.balance ?? 0) * 100) / 100)}
+          </span>
+        ),
+      },
+      {
+        field: "portfolioShare",
+        headerName: t("tracker.portfolioShare") ?? "Share of portfolio",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {formatPctOfPortfolio(params.row?.baseBalance) || t("tracker.na")}
+          </span>
+        ),
+      },
+    ];
+  }, [t, formatPctOfPortfolio]);
+
+  const positionRows = useMemo(() => {
+    return (assetPerf || []).map((p) => ({
+      id: p.assetId,
+      assetId: p.assetId,
+      assetSymbol: p.assetSymbol,
+      assetName: p.assetName,
+      lastPrice: p.lastPrice,
+      currency: p.currency ?? "",
+      quantity: p.quantity,
+      openCostBasisBase: p.openCostBasisBase,
+      marketValueBase: p.marketValueBase,
+      totalReturnBase: p.totalReturnBase,
+      baseCurrency: p.baseCurrency ?? "EUR",
+      raw: p,
+    }));
+  }, [assetPerf]);
+
+  const positionColumns = useMemo(() => {
+    const formatNumber = (value) => String(Math.round(Number(value ?? 0) * 100) / 100);
+
+    return [
+      {
+        field: "assetSymbol",
+        headerName: t("tracker.symbol"),
+        flex: 1,
+        renderCell: (params) => (
+          <Link to={`/assets/${params.row.assetId}${assetLinkQs}`} className="underline">
+            {params.value}
+          </Link>
+        ),
+      },
+      {
+        field: "assetName",
+        headerName: t("tracker.name"),
+        flex: 1.4,
+        renderCell: (params) => (
+          <Link to={`/assets/${params.row.assetId}${assetLinkQs}`} className="underline">
+            {params.value}
+          </Link>
+        ),
+      },
+      {
+        field: "lastPrice",
+        headerName: t("tracker.lastPrice"),
+        flex: 1.1,
+        renderCell: (params) => {
+          const row = params.row.raw;
+          return (
+            <div className="flex items-center gap-2">
+              <span className="font-mono">
+                {params.value == null ? t("tracker.na") : formatNumber(params.value)}{" "}
+                {row?.currency ?? ""}
+              </span>
+              {isPriceStale(row) && (
+                <button
+                  type="button"
+                  className="text-xs text-red-600 underline"
+                  title={t("tracker.priceStaleTitle", {
+                    days: getPriceAgeDays(row),
+                  })}
+                  onClick={() => openPriceModal(row)}
+                >
+                  {t("tracker.priceStale", { days: getPriceAgeDays(row) })}
+                </button>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        field: "quantity",
+        headerName: t("tracker.quantity"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatNumber(params.row?.quantity)}</span>
+        ),
+      },
+      {
+        field: "openCostBasisBase",
+        headerName: t("tracker.costBaseEur") ?? "Cost base (EUR)",
+        flex: 1.1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {formatNumber(params.value)} {params.row.baseCurrency}
+          </span>
+        ),
+      },
+      {
+        field: "marketValueBase",
+        headerName: t("tracker.marketValueEur") ?? "Market value (EUR)",
+        flex: 1.1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {formatNumber(params.value)} {params.row.baseCurrency}
+          </span>
+        ),
+      },
+      {
+        field: "totalReturnBase",
+        headerName: t("tracker.totalReturnEur") ?? "Total return (EUR)",
+        flex: 1.1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {formatNumber(params.value)} {params.row.baseCurrency}
+          </span>
+        ),
+      },
+      {
+        field: "portfolioShare",
+        headerName: t("tracker.portfolioShare") ?? "Share of portfolio",
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">
+            {formatPctOfPortfolio(params.row?.marketValueBase) || t("tracker.na")}
+          </span>
+        ),
+      },
+    ];
+  }, [t, assetLinkQs, formatPctOfPortfolio, isPriceStale, getPriceAgeDays, openPriceModal]);
+
+  const totalsRows = useMemo(() => {
+    return (portfolio?.totals || []).map((row) => ({
+      id: row.currency,
+      currency: row.currency,
+      cashTotal: row.cashTotal,
+      positionsTotal: row.positionsTotal,
+      portfolioTotal: row.portfolioTotal,
+    }));
+  }, [portfolio]);
+
+  const totalsColumns = useMemo(() => {
+    const formatNumber = (value) => String(Math.round(Number(value ?? 0) * 100) / 100);
+    return [
+      { field: "currency", headerName: t("tracker.currency"), flex: 1 },
+      {
+        field: "cashTotal",
+        headerName: t("tracker.cash"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatNumber(params.row?.cashTotal)}</span>
+        ),
+      },
+      {
+        field: "positionsTotal",
+        headerName: t("tracker.positions"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatNumber(params.row?.positionsTotal)}</span>
+        ),
+      },
+      {
+        field: "portfolioTotal",
+        headerName: t("tracker.total"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{formatNumber(params.row?.portfolioTotal)}</span>
+        ),
+      },
+    ];
+  }, [t]);
+
   const openP2pModal = () => {
     const today = new Date().toISOString().slice(0, 10);
     setP2pForm({
@@ -592,7 +799,7 @@ const PortfolioOverview = () => {
   // No accounts UX
   if (!accounts || accounts.length === 0) {
     return (
-      <div className="p-6 max-w-xl">
+      <div className="p-6 max-w-xl w-full mx-auto">
         <h1 className="text-2xl font-bold mb-2">{t("tracker.portfolioTitle")}</h1>
         <p className="text-slate-600 mb-6">{t("tracker.noAccountsHint")}</p>
 
@@ -945,61 +1152,6 @@ const PortfolioOverview = () => {
             </div>
           )}
 
-          {/* Cash balances */}
-          <div className="border rounded overflow-hidden mb-6">
-            <div className="p-4 font-semibold border-b flex justify-between items-center">
-              {t("tracker.cashBalancesTitle")}
-              <button
-                type="button"
-                onClick={() => {
-                  const q =
-                    selectedAccountId && selectedAccountId !== "ALL"
-                      ? `?accountId=${encodeURIComponent(selectedAccountId)}`
-                      : "";
-                  navigate(`/cash-transactions/new${q}`);
-                }}
-                className="px-4 py-2 bg-btnColor text-white rounded font-semibold"
-              >
-                {t("cash.add")}
-              </button>
-            </div>
-
-            <div className="overflow-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-slate-50">
-                  <tr className="text-left">
-                    <th className="p-3">{t("tracker.currency")}</th>
-                    <th className="p-3">{t("tracker.balance")}</th>
-                    <th className="p-3">{t("tracker.portfolioShare") ?? "Share of portfolio"}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(portfolio.cashBalances || []).map((b) => (
-                    <tr key={b.currency} className="border-t">
-                      <td className="p-3">
-                        <Link to="/cash" className="underline">
-                          {b.currency}
-                        </Link>
-                      </td>
-                      <td className="p-3 font-mono">{String(Math.round(b.balance * 100) / 100)}</td>
-                      <td className="p-3 font-mono">
-                        {formatPctOfPortfolio(b.baseBalance) || t("tracker.na")}
-                      </td>
-                    </tr>
-                  ))}
-
-                  {(portfolio.cashBalances || []).length === 0 && (
-                    <tr className="border-t">
-                      <td className="p-3 text-slate-600" colSpan={3}>
-                        {t("tracker.noCashBalances")}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
           {/* Positions table */}
           <div className="border rounded overflow-hidden mb-6">
             <div className="p-4 font-semibold border-b flex justify-between items-center">
@@ -1025,140 +1177,74 @@ const PortfolioOverview = () => {
                 {t("tracker.loading") ?? "Loading..."}
               </div>
             ) : (
-              <div className="overflow-auto">
-                <table className="min-w-full text-sm">
-                  <thead className="bg-slate-50">
-                    <tr className="text-left">
-                      <th className="p-3">{t("tracker.symbol")}</th>
-                      <th className="p-3">{t("tracker.name")}</th>
-                      <th className="p-3">{t("tracker.lastPrice")}</th>
-                      <th className="p-3">{t("tracker.quantity")}</th>
-                      <th className="p-3">{t("tracker.costBaseEur") ?? "Cost base (EUR)"}</th>
-                      <th className="p-3">{t("tracker.marketValueEur") ?? "Market value (EUR)"}</th>
-                      <th className="p-3">{t("tracker.totalReturnEur") ?? "Total return (EUR)"}</th>
-                      <th className="p-3">{t("tracker.portfolioShare") ?? "Share of portfolio"}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(assetPerf || []).map((p) => {
-                      const sharePct = formatPctOfPortfolio(p.marketValueBase);
-                      return (
-                        <tr key={p.assetId} className="border-t">
-                          <td className="p-3">
-                            <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
-                              {p.assetSymbol}
-                            </Link>
-                          </td>
-                          <td className="p-3">
-                            <Link to={`/assets/${p.assetId}${assetLinkQs}`} className="underline">
-                              {p.assetName}
-                            </Link>
-                          </td>
-
-                          {/* Price in original currency */}
-                          <td className="p-3 font-mono">
-                            <div className="flex items-center gap-2">
-                              <span>
-                                {p.lastPrice == null
-                                  ? t("tracker.na")
-                                  : String(Math.round(Number(p.lastPrice) * 100) / 100)}{" "}
-                                {p.currency ?? ""}
-                              </span>
-                              {isPriceStale(p) && (
-                                <button
-                                  type="button"
-                                  className="text-xs text-red-600 underline"
-                                  title={t("tracker.priceStaleTitle", {
-                                    days: getPriceAgeDays(p),
-                                  })}
-                                  onClick={() => openPriceModal(p)}
-                                >
-                                  {t("tracker.priceStale", { days: getPriceAgeDays(p) })}
-                                </button>
-                              )}
-                            </div>
-                          </td>
-
-                          <td className="p-3 font-mono">
-                            {String(Math.round(Number(p.quantity ?? 0) * 100) / 100)}
-                          </td>
-
-                          {/* Cost base (EUR) */}
-                          <td className="p-3 font-mono">
-                            {String(Math.round(Number(p.openCostBasisBase ?? 0) * 100) / 100)}{" "}
-                            {p.baseCurrency ?? "EUR"}
-                          </td>
-
-                          {/* Market value (EUR) */}
-                          <td className="p-3 font-mono">
-                            {String(Math.round(Number(p.marketValueBase ?? 0) * 100) / 100)}{" "}
-                            {p.baseCurrency ?? "EUR"}
-                          </td>
-
-                          {/* Total return (EUR) */}
-                          <td className="p-3 font-mono">
-                            {String(Math.round(Number(p.totalReturnBase ?? 0) * 100) / 100)}{" "}
-                            {p.baseCurrency ?? "EUR"}
-                          </td>
-
-                          {/* Share of portfolio */}
-                          <td className="p-3 font-mono">{sharePct || t("tracker.na")}</td>
-                        </tr>
-                      );
-                    })}
-
-                    {(assetPerf || []).length === 0 && (
-                      <tr className="border-t">
-                        <td className="p-3 text-slate-600" colSpan={8}>
-                          {t("tracker.noPositions")}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+              <div className="overflow-x-auto w-full">
+                <DataGrid
+                  className="w-full"
+                  rows={positionRows}
+                  columns={positionColumns}
+                  autoHeight
+                  disableRowSelectionOnClick
+                  disableColumnResize
+                  pageSizeOptions={[10, 25, 50]}
+                  initialState={{
+                    pagination: {
+                      paginationModel: { pageSize: 10 },
+                    },
+                  }}
+                  localeText={{ noRowsLabel: t("tracker.noPositions") }}
+                />
               </div>
             )}
+          </div>
+
+          {/* Cash balances */}
+          <div className="border rounded overflow-hidden mb-6">
+            <div className="p-4 font-semibold border-b flex justify-between items-center">
+              {t("tracker.cashBalancesTitle")}
+              <button
+                type="button"
+                onClick={() => {
+                  const q =
+                    selectedAccountId && selectedAccountId !== "ALL"
+                      ? `?accountId=${encodeURIComponent(selectedAccountId)}`
+                      : "";
+                  navigate(`/cash-transactions/new${q}`);
+                }}
+                className="px-4 py-2 bg-btnColor text-white rounded font-semibold"
+              >
+                {t("cash.add")}
+              </button>
+            </div>
+
+            <div className="overflow-x-auto w-full">
+              <DataGrid
+                className="w-full"
+                rows={cashBalanceRows}
+                columns={cashBalanceColumns}
+                autoHeight
+                hideFooter
+                disableRowSelectionOnClick
+                disableColumnResize
+                localeText={{ noRowsLabel: t("tracker.noCashBalances") }}
+              />
+            </div>
           </div>
 
           {/* Currency totals table */}
           <div className="border rounded overflow-hidden mt-6">
             <div className="p-4 font-semibold border-b">{t("tracker.totalsByCurrencyTitle")}</div>
 
-            <div className="overflow-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-slate-50">
-                  <tr className="text-left">
-                    <th className="p-3">{t("tracker.currency")}</th>
-                    <th className="p-3">{t("tracker.cash")}</th>
-                    <th className="p-3">{t("tracker.positions")}</th>
-                    <th className="p-3">{t("tracker.total")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(portfolio.totals || []).map((tRow) => (
-                    <tr key={tRow.currency} className="border-t">
-                      <td className="p-3">{tRow.currency}</td>
-                      <td className="p-3 font-mono">
-                        {String(Math.round(tRow.cashTotal * 100) / 100)}
-                      </td>
-                      <td className="p-3 font-mono">
-                        {String(Math.round(tRow.positionsTotal * 100) / 100)}
-                      </td>
-                      <td className="p-3 font-mono">
-                        {String(Math.round(tRow.portfolioTotal * 100) / 100)}
-                      </td>
-                    </tr>
-                  ))}
-
-                  {(portfolio.totals || []).length === 0 && (
-                    <tr className="border-t">
-                      <td className="p-3 text-slate-600" colSpan={4}>
-                        {t("tracker.noTotals")}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div className="overflow-x-auto w-full">
+              <DataGrid
+                className="w-full"
+                rows={totalsRows}
+                columns={totalsColumns}
+                autoHeight
+                hideFooter
+                disableRowSelectionOnClick
+                disableColumnResize
+                localeText={{ noRowsLabel: t("tracker.noTotals") }}
+              />
             </div>
 
             <PopModal

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../services/api";
+import { DataGrid } from "@mui/x-data-grid";
 
 const CashOverview = () => {
   const { t } = useTranslation();
@@ -44,22 +45,22 @@ const CashOverview = () => {
     return res.data || [];
   };
 
-const loadTransactions = async (accountId, fromDate, toDate) => {
-  const params = new URLSearchParams();
-  params.set("accountId", String(accountId));
-  if (fromDate) params.set("from", fromDate);
-  if (toDate) params.set("to", toDate);
+  const loadTransactions = async (accountId, fromDate, toDate) => {
+    const params = new URLSearchParams();
+    params.set("accountId", String(accountId));
+    if (fromDate) params.set("from", fromDate);
+    if (toDate) params.set("to", toDate);
 
-  const qs = params.toString();
-  console.log("[CashOverview] GET /cash-transactions?" + qs, {
-    accountId,
-    fromDate,
-    toDate,
-  });
+    const qs = params.toString();
+    console.log("[CashOverview] GET /cash-transactions?" + qs, {
+      accountId,
+      fromDate,
+      toDate,
+    });
 
-  const res = await api.get(`/cash-transactions?${qs}`);
-  return res.data || [];
-};
+    const res = await api.get(`/cash-transactions?${qs}`);
+    return res.data || [];
+  };
 
   const refresh = async () => {
     if (!selectedAccountId) return;
@@ -89,7 +90,7 @@ const loadTransactions = async (accountId, fromDate, toDate) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAccountId]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (!selectedAccountId) return;
     refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,8 +102,67 @@ const loadTransactions = async (accountId, fromDate, toDate) => {
 
   const sortedTxs = useMemo(() => {
     // newest first
-    return [...(transactions || [])].sort((a, b) => String(b.executedAt).localeCompare(String(a.executedAt)));
+    return [...(transactions || [])].sort((a, b) =>
+      String(b.executedAt).localeCompare(String(a.executedAt)),
+    );
   }, [transactions]);
+
+  const balanceRows = useMemo(() => {
+    return sortedBalances.map((b) => ({
+      id: b.currency,
+      currency: b.currency,
+      balance: b.balance,
+    }));
+  }, [sortedBalances]);
+
+  const balanceColumns = useMemo(() => {
+    return [
+      { field: "currency", headerName: t("tracker.currency"), flex: 1 },
+      {
+        field: "balance",
+        headerName: t("tracker.balance"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{String(params.row?.balance ?? "")}</span>
+        ),
+      },
+    ];
+  }, [t]);
+
+  const transactionRows = useMemo(() => {
+    return sortedTxs.map((tx) => ({
+      id: tx.id ?? `${tx.executedAt}-${tx.currency}-${tx.amount}-${tx.type}`,
+      executedAt: tx.executedAt,
+      type: tx.type,
+      currency: tx.currency,
+      amount: tx.amount,
+      note: tx.note || "",
+    }));
+  }, [sortedTxs]);
+
+  const transactionColumns = useMemo(() => {
+    return [
+      {
+        field: "executedAt",
+        headerName: t("cash.date"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{String(params.row?.executedAt ?? "")}</span>
+        ),
+      },
+      { field: "type", headerName: t("cash.type"), flex: 1 },
+      { field: "currency", headerName: t("tracker.currency"), flex: 1 },
+      {
+        field: "amount",
+        headerName: t("cash.amount"),
+        flex: 1,
+        renderCell: (params) => (
+          <span className="font-mono">{String(params.row?.amount ?? "")}</span>
+        ),
+      },
+      { field: "note", headerName: t("cash.note"), flex: 1.5 },
+    ];
+  }, [t]);
 
   if (loadingAccounts) return <div className="p-6">{t("cash.loading")}</div>;
 
@@ -139,7 +199,9 @@ const loadTransactions = async (accountId, fromDate, toDate) => {
 
           <button
             type="button"
-            onClick={() => navigate(`/cash-transactions/new?accountId=${encodeURIComponent(selectedAccountId)}`)}
+            onClick={() =>
+              navigate(`/cash-transactions/new?accountId=${encodeURIComponent(selectedAccountId)}`)
+            }
             className="px-4 py-2 bg-btnColor text-white rounded font-semibold"
           >
             {t("cash.add")}
@@ -186,7 +248,6 @@ const loadTransactions = async (accountId, fromDate, toDate) => {
               onClick={() => {
                 setFrom("");
                 setTo("");
-                
               }}
               className="px-4 py-2 border rounded hover:bg-slate-50"
             >
@@ -199,68 +260,39 @@ const loadTransactions = async (accountId, fromDate, toDate) => {
       {/* Balances */}
       <div className="border rounded overflow-hidden mb-6">
         <div className="p-4 font-semibold border-b">{t("cash.balancesTitle")}</div>
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left">
-                <th className="p-3">{t("tracker.currency")}</th>
-                <th className="p-3">{t("tracker.balance")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedBalances.map((b) => (
-                <tr key={b.currency} className="border-t">
-                  <td className="p-3">{b.currency}</td>
-                  <td className="p-3 font-mono">{String(b.balance)}</td>
-                </tr>
-              ))}
-
-              {sortedBalances.length === 0 && (
-                <tr className="border-t">
-                  <td className="p-3 text-slate-600" colSpan={2}>
-                    {t("cash.noBalances")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto w-full">
+          <DataGrid
+            className="w-full"
+            rows={balanceRows}
+            columns={balanceColumns}
+            autoHeight
+            hideFooter
+            disableRowSelectionOnClick
+            disableColumnResize
+            localeText={{ noRowsLabel: t("cash.noBalances") }}
+          />
         </div>
       </div>
 
       {/* Transactions */}
       <div className="border rounded overflow-hidden">
         <div className="p-4 font-semibold border-b">{t("cash.transactionsTitle")}</div>
-        <div className="overflow-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-slate-50">
-              <tr className="text-left">
-                <th className="p-3">{t("cash.date")}</th>
-                <th className="p-3">{t("cash.type")}</th>
-                <th className="p-3">{t("tracker.currency")}</th>
-                <th className="p-3">{t("cash.amount")}</th>
-                <th className="p-3">{t("cash.note")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedTxs.map((tx) => (
-                <tr key={tx.id} className="border-t">
-                  <td className="p-3 font-mono">{String(tx.executedAt)}</td>
-                  <td className="p-3">{String(tx.type)}</td>
-                  <td className="p-3">{tx.currency}</td>
-                  <td className="p-3 font-mono">{String(tx.amount)}</td>
-                  <td className="p-3">{tx.note || ""}</td>
-                </tr>
-              ))}
-
-              {sortedTxs.length === 0 && (
-                <tr className="border-t">
-                  <td className="p-3 text-slate-600" colSpan={5}>
-                    {t("cash.noTransactions")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+        <div className="overflow-x-auto w-full">
+          <DataGrid
+            className="w-full"
+            rows={transactionRows}
+            columns={transactionColumns}
+            autoHeight
+            disableRowSelectionOnClick
+            disableColumnResize
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{
+              pagination: {
+                paginationModel: { pageSize: 10 },
+              },
+            }}
+            localeText={{ noRowsLabel: t("cash.noTransactions") }}
+          />
         </div>
       </div>
     </div>
