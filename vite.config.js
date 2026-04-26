@@ -8,6 +8,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [tailwindcss(), react()],
+    test: {
+      environment: "jsdom",
+      globals: true,
+      setupFiles: "./src/setupTests.jsx",
+    },
     server: {
       port: 3000,
       proxy: {

@@ -28,6 +28,7 @@ const PortfolioOverview = () => {
   const [seriesTo, setSeriesTo] = useState("");
   const [seriesInterval, setSeriesInterval] = useState("DAILY");
   const [seriesPreset, setSeriesPreset] = useState("ALL");
+  const [assetsMeta, setAssetsMeta] = useState([]);
   const [priceModalOpen, setPriceModalOpen] = useState(false);
   const [priceAsset, setPriceAsset] = useState(null);
   const [priceValue, setPriceValue] = useState("");
@@ -163,6 +164,16 @@ const PortfolioOverview = () => {
     }
   };
 
+  const loadAssetsMeta = async () => {
+    try {
+      const res = await api.get("/assets");
+      setAssetsMeta(res.data || []);
+    } catch (e) {
+      console.error(e);
+      setAssetsMeta([]);
+    }
+  };
+
   const loadPerformance = async (accountIdOrAll, asOfDate) => {
     if (!accountIdOrAll) return;
 
@@ -257,6 +268,7 @@ const PortfolioOverview = () => {
 
   useEffect(() => {
     loadAccounts();
+    loadAssetsMeta();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -477,6 +489,14 @@ const PortfolioOverview = () => {
     return s ? `?${s}` : "";
   }, [selectedAccountId, asOf]);
 
+  const pricingModeById = useMemo(() => {
+    const map = new Map();
+    for (const asset of assetsMeta || []) {
+      map.set(String(asset.id), asset.pricingMode);
+    }
+    return map;
+  }, [assetsMeta]);
+
   const getAgeDays = (dateStr, refStr) => {
     if (!dateStr) return null;
     const ref = refStr ? new Date(`${refStr}T00:00:00`) : new Date();
@@ -494,6 +514,8 @@ const PortfolioOverview = () => {
   const getPriceAgeDays = (row) => getAgeDays(row?.lastPriceDate, asOf);
 
   const openPriceModal = (row) => {
+    const pricingMode = pricingModeById.get(String(row?.assetId));
+    if (pricingMode && pricingMode !== "MANUAL") return;
     const today = new Date().toISOString().slice(0, 10);
     setPriceAsset(row);
     setPriceValue(row?.lastPrice != null ? String(row.lastPrice) : "");
@@ -558,9 +580,10 @@ const PortfolioOverview = () => {
       marketValueBase: p.marketValueBase,
       totalReturnBase: p.totalReturnBase,
       baseCurrency: p.baseCurrency ?? "EUR",
+      pricingMode: pricingModeById.get(String(p.assetId)) || null,
       raw: p,
     }));
-  }, [assetPerf]);
+  }, [assetPerf, pricingModeById]);
 
   const positionColumns = useMemo(() => {
     const formatNumber = (value) => String(Math.round(Number(value ?? 0) * 100) / 100);
@@ -592,13 +615,25 @@ const PortfolioOverview = () => {
         flex: 1.1,
         renderCell: (params) => {
           const row = params.row.raw;
+          const isManual = params.row.pricingMode === "MANUAL";
           return (
             <div className="flex items-center gap-2">
-              <span className="font-mono">
-                {params.value == null ? t("tracker.na") : formatNumber(params.value)}{" "}
-                {row?.currency ?? ""}
-              </span>
-              {isPriceStale(row) && (
+              {isManual ? (
+                <button
+                  type="button"
+                  className="font-mono underline"
+                  onClick={() => openPriceModal(row)}
+                >
+                  {params.value == null ? t("tracker.na") : formatNumber(params.value)}{" "}
+                  {row?.currency ?? ""}
+                </button>
+              ) : (
+                <span className="font-mono">
+                  {params.value == null ? t("tracker.na") : formatNumber(params.value)}{" "}
+                  {row?.currency ?? ""}
+                </span>
+              )}
+              {isManual && isPriceStale(row) && (
                 <button
                   type="button"
                   className="text-xs text-red-600 underline"
