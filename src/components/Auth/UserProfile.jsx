@@ -45,13 +45,13 @@ const UserProfile = () => {
   const [disabledLoader, setDisbledLoader] = useState(false);
   const [twofaCodeLoader, settwofaCodeLoader] = useState(false);
 
-   const { t } = useTranslation();
+  const { t } = useTranslation();
 
   const {
     register,
     handleSubmit,
     setValue,
-      watch,
+    watch,
 
     formState: { errors },
   } = useForm({
@@ -74,7 +74,7 @@ const UserProfile = () => {
         setIs2faEnabled(response.data.is2faEnabled);
       } catch (error) {
         setPageError(error?.response?.data?.message);
-        toast.error("Error fetching 2FA status");
+        toast.error(t("userProfile.toast.fetch2faError"));
       } finally {
         setPageLoader(false);
       }
@@ -90,7 +90,7 @@ const UserProfile = () => {
       setQrCodeUrl(response.data);
       setStep(2);
     } catch (error) {
-      toast.error("Error enabling 2FA", error?.response?.data?.message);
+      toast.error(t("userProfile.toast.enable2faError"), error?.response?.data?.message);
     } finally {
       setDisbledLoader(false);
     }
@@ -105,7 +105,7 @@ const UserProfile = () => {
       setIs2faEnabled(false);
       setQrCodeUrl("");
     } catch (error) {
-      toast.error("Error disabling 2FA", error?.response?.data?.message);
+      toast.error(t("userProfile.toast.disable2faError"), error?.response?.data?.message);
     } finally {
       setDisbledLoader(false);
     }
@@ -113,7 +113,8 @@ const UserProfile = () => {
 
   //verify the 2fa
   const verify2FA = async () => {
-    if (!code || code.trim().length === 0) return toast.error("Please Enter The Code To Verify");
+    if (!code || code.trim().length === 0)
+      return toast.error(t("userProfile.toast.enterCodeToVerify"));
 
     settwofaCodeLoader(true);
 
@@ -126,13 +127,13 @@ const UserProfile = () => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       });
-      toast.success("2FA verified successful");
+      toast.success(t("userProfile.toast.verify2faSuccess"));
 
       setIs2faEnabled(true);
       setStep(1);
     } catch (error) {
       console.error("Error verifying 2FA", error);
-      toast.error("Invalid 2FA Code");
+      toast.error(t("userProfile.toast.invalid2faCode"));
     } finally {
       settwofaCodeLoader(false);
     }
@@ -159,9 +160,9 @@ const UserProfile = () => {
       setValue("confirmPassword", "");
 
       //fetchUser();
-      toast.success("Update Credential successful");
+      toast.success(t("userProfile.toast.updateCredentialSuccess"));
     } catch (error) {
-      toast.error("Update Credential failed", error?.response?.data?.message);
+      toast.error(t("userProfile.toast.updateCredentialFailed"), error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -209,9 +210,9 @@ const UserProfile = () => {
       });
 
       //fetchUser();
-      toast.success("Update Account Expirey Status");
+      toast.success(t("userProfile.toast.updateAccountExpirySuccess"));
     } catch (error) {
-      toast.error("Update expirey status failed", error?.response?.data?.message);
+      toast.error(t("userProfile.toast.updateAccountExpiryFailed"), error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -233,9 +234,9 @@ const UserProfile = () => {
       });
 
       //fetchUser();
-      toast.success("Update Account Lock Status");
+      toast.success(t("userProfile.toast.updateAccountLockSuccess"));
     } catch (error) {
-      toast.error("Update Account Lock status failed", error?.response?.data?.message);
+      toast.error(t("userProfile.toast.updateAccountLockFailed"), error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -256,9 +257,12 @@ const UserProfile = () => {
       });
 
       //fetchUser();
-      toast.success("Update Account Enabled Status");
+      toast.success(t("userProfile.toast.updateAccountEnabledSuccess"));
     } catch (error) {
-      toast.error("Update Account Enabled status failed", error?.response?.data?.message);
+      toast.error(
+        t("userProfile.toast.updateAccountEnabledFailed"),
+        error?.response?.data?.message,
+      );
     } finally {
       setLoading(false);
     }
@@ -279,9 +283,12 @@ const UserProfile = () => {
       });
 
       //fetchUser();
-      toast.success("Update Credentials Expiry Status");
+      toast.success(t("userProfile.toast.updateCredentialExpirySuccess"));
     } catch (error) {
-      toast.error("Credentials Expiry Status Failed", error?.response?.data?.message);
+      toast.error(
+        t("userProfile.toast.updateCredentialExpiryFailed"),
+        error?.response?.data?.message,
+      );
     } finally {
       setLoading(false);
     }
@@ -318,7 +325,7 @@ const UserProfile = () => {
                 visible={true}
               />
             </span>
-            <span>Please wait...</span>
+            <span>{t("userProfile.pageLoading")}</span>
           </div>
         </>
       ) : (
@@ -333,11 +340,11 @@ const UserProfile = () => {
               <div className="my-4 ">
                 <div className="space-y-2 px-4 mb-1">
                   <h1 className="font-semibold text-md text-slate-800">
-                    UserName :{" "}
+                    {t("auth.username")} :{" "}
                     <span className=" text-slate-700  font-normal">{currentUser?.username}</span>
                   </h1>
                   <h1 className="font-semibold text-md text-slate-800">
-                    Role :{" "}
+                    {t("userProfile.roleLabel")} :{" "}
                     <span className=" text-slate-700  font-normal">
                       {currentUser && currentUser["roles"][0]}
                     </span>
@@ -353,7 +360,7 @@ const UserProfile = () => {
                       id="panel1-header"
                     >
                       <h3 className="text-slate-800 text-lg font-semibold ">
-                        Update User Credentials
+                        {t("userProfile.updateCredentialsTitle")}
                       </h3>
                     </AccordionSummary>
                     <AccordionDetails className="shadow-md shadow-gray-300">
@@ -362,53 +369,53 @@ const UserProfile = () => {
                         onSubmit={handleSubmit(handleUpdateCredential)}
                       >
                         <InputField
-                          label="UserName"
+                          label={t("auth.username")}
                           required
                           id="username"
                           className="text-sm"
                           type="text"
-                          message="*Username is required"
-                          placeholder="Enter your username"
+                          message={t("auth.usernameRequired")}
+                          placeholder={t("auth.usernamePlaceholder")}
                           register={register}
                           errors={errors}
                           readOnly
                         />{" "}
                         <InputField
-                          label="Email"
+                          label={t("auth.email")}
                           required
                           id="email"
                           className="text-sm"
                           type="email"
-                          message="*Email is required"
-                          placeholder="Enter your email"
+                          message={t("auth.emailRequired")}
+                          placeholder={t("auth.emailPlaceholder")}
                           register={register}
                           errors={errors}
                           readOnly
                         />{" "}
                         <InputField
-                          label="Enter New Password"
+                          label={t("auth.newPassword")}
                           id="password"
                           className="text-sm"
                           type="password"
-                          message="*Password is required"
-                          placeholder="type your password"
+                          message={t("auth.passwordRequired")}
+                          placeholder={t("auth.passwordPlaceholder")}
                           register={register}
                           errors={errors}
                           min={6}
                         />
                         <InputField
-                          label="Confirm Password"
+                          label={t("auth.confirmPassword")}
                           required
                           id="confirmPassword"
                           className="text-sm"
                           type="password"
-                          message="*Confirm Password is required"
+                          message={t("auth.confirmPasswordRequired")}
                           placeholder={t("auth.confirmPasswordPlaceholder")}
                           register={register}
                           errors={errors}
                           min={6}
                           validate={(value) =>
-                            value === watch("password") || "Passwords do not match"
+                            value === watch("password") || t("auth.passwordsDoNotMatch")
                           }
                         />
                         <Buttons
@@ -416,7 +423,11 @@ const UserProfile = () => {
                           className="bg-customRed font-semibold flex justify-center text-white w-full py-2 hover:text-slate-400 transition-colors duration-100 rounded-sm my-3"
                           type="submit"
                         >
-                          {loading ? <span>Loading...</span> : "Update"}
+                          {loading ? (
+                            <span>{t("auth.loading")}</span>
+                          ) : (
+                            t("userProfile.updateButton")
+                          )}
                         </Buttons>
                       </form>
                     </AccordionDetails>
@@ -430,13 +441,15 @@ const UserProfile = () => {
                         aria-controls="panel1-content"
                         id="panel1-header"
                       >
-                        <h3 className="text-slate-800 text-lg font-semibold">Account Setting</h3>
+                        <h3 className="text-slate-800 text-lg font-semibold">
+                          {t("userProfile.accountSetting")}
+                        </h3>
                       </AccordionSummary>
                       <AccordionDetails className="shadow-md shadow-gray-300">
                         <div className="flex flex-col gap-4">
                           <div>
                             <h3 className="text-slate-700 font-customWeight text-sm ">
-                              Account Expired
+                              {t("userProfile.accountExpired")}
                             </h3>
                             <Switch
                               checked={accountExpired}
@@ -446,7 +459,7 @@ const UserProfile = () => {
                           </div>{" "}
                           <div>
                             <h3 className="text-slate-700 font-customWeight text-sm ">
-                              Account Locked
+                              {t("userProfile.accountLocked")}
                             </h3>
                             <Switch
                               checked={accountLocked}
@@ -456,7 +469,7 @@ const UserProfile = () => {
                           </div>{" "}
                           <div>
                             <h3 className="text-slate-700 font-customWeight text-sm ">
-                              Account Enabled
+                              {t("userProfile.accountEnabled")}
                             </h3>
                             <Switch
                               checked={accountEnabled}
@@ -467,18 +480,19 @@ const UserProfile = () => {
                           <>
                             <div className="mb-2">
                               <h3 className="text-slate-700 font-customWeight text-sm ">
-                                Credential Setting
+                                {t("userProfile.credentialSetting")}
                               </h3>
                               <div className="shadow-gray-300 shadow-md px-4 py-4 rounded-md">
                                 <p className="text-slate-700  text-sm ">
-                                  Your credential will expired <span>{credentialExpireDate}</span>
+                                  {t("userProfile.credentialWillExpire")}{" "}
+                                  <span>{credentialExpireDate}</span>
                                 </p>
                               </div>
                             </div>
                           </>
                           <div>
                             <h3 className="text-slate-700 font-customWeight text-sm">
-                              Credential Expired
+                              {t("userProfile.credentialExpired")}
                             </h3>
                             <Switch
                               checked={credentialExpired}
@@ -493,11 +507,11 @@ const UserProfile = () => {
 
                   <div className="pt-10 ">
                     <h3 className="text-slate-800 text-lg font-semibold  mb-2 px-2">
-                      Last Login Session
+                      {t("userProfile.lastLoginSession")}
                     </h3>
                     <div className="shadow-md shadow-gray-300 px-4 py-2 rounded-md">
                       <p className="text-slate-700 text-sm">
-                        Your Last LogIn Session when you are loggedin <br />
+                        {t("userProfile.lastLoginDescription")} <br />
                         <span>{loginSession}</span>
                       </p>
                     </div>
@@ -508,21 +522,21 @@ const UserProfile = () => {
             <div className="flex-1 flex flex-col shadow-lg shadow-gray-300 gap-2 px-4 py-6">
               <div className="space-y-1">
                 <h1 className="text-slate-800 flex items-center gap-1 text-2xl font-bold">
-                  <span>Authentication (MFA)</span>
+                  <span>{t("userProfile.mfaTitle")}</span>
                   <span
                     className={` ${
                       is2faEnabled ? "bg-green-800" : "bg-customRed"
                     } px-2 text-center py-1 text-xs mt-2 rounded-sm text-white`}
                   >
-                    {is2faEnabled ? "Activated" : "Deactivated"}
+                    {is2faEnabled
+                      ? t("userProfile.mfaStatusActivated")
+                      : t("userProfile.mfaStatusDeactivated")}
                   </span>
                 </h1>{" "}
                 <h3 className="text-slate-800 text-xl font-semibold">
-                  Multi Factor Authentication
+                  {t("userProfile.mfaSubtitle")}
                 </h3>{" "}
-                <p className="text-slate-800 text-sm ">
-                  Two Factor Authentication Add a additional layer of security to your account
-                </p>
+                <p className="text-slate-800 text-sm ">{t("userProfile.mfaDescription")}</p>
               </div>
 
               <div>
@@ -534,13 +548,9 @@ const UserProfile = () => {
                   } px-5 py-1 hover:text-slate-300 rounded-sm text-white mt-2`}
                 >
                   {disabledLoader ? (
-                    <>Loading...</>
+                    <>{t("auth.loading")}</>
                   ) : (
-                    <>
-                      {is2faEnabled
-                        ? "Disabled Two Factor Authentication"
-                        : "Enable Two Factor Authentication"}
-                    </>
+                    <>{is2faEnabled ? t("userProfile.disable2fa") : t("userProfile.enable2fa")}</>
                   )}
                 </Buttons>
               </div>
@@ -553,7 +563,7 @@ const UserProfile = () => {
                       id="panel1-header"
                     >
                       <h3 className="font-bold text-lg  text-slate-700 uppercase">
-                        QR Code To Scan
+                        {t("userProfile.qrCodeToScan")}
                       </h3>
                     </AccordionSummary>
                     <AccordionDetails>
@@ -562,7 +572,7 @@ const UserProfile = () => {
                         <div className="flex items-center  gap-2  mt-4">
                           <input
                             type="text"
-                            placeholder="Enter 2FA code"
+                            placeholder={t("auth.codePlaceholder")}
                             value={code}
                             required
                             className="mt-4 border px-2 py-1 border-slate-800 rounded-md"
@@ -572,7 +582,7 @@ const UserProfile = () => {
                             className="bg-btnColor text-white  px-3 h-10 rounded-md mt-4"
                             onClick={verify2FA}
                           >
-                            {twofaCodeLoader ? "Loading..." : "Verify 2FA"}
+                            {twofaCodeLoader ? t("auth.loading") : t("auth.verify2faButton")}
                           </button>
                         </div>
                       </div>
