@@ -23,6 +23,7 @@ import PortfolioOverview from "./components/Tracker/PortfolioOverview";
 import AddCashTransaction from "./components/Tracker/AddCashTransaction";
 import CashOverview from "./components/Cash/CashOverview";
 import AddTrade from "./components/Trade/AddTrade";
+import EditTrade from "./components/Trade/EditTrade";
 import AddAsset from "./components/Asset/AddAsset";
 import CreateAccount from "./components/Tracker/CreateAccount";
 import AssetDetails from "./components/Asset/AssetDetails";
@@ -133,6 +134,14 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <AddTrade />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/trades/:tradeId/edit"
+              element={
+                <ProtectedRoute>
+                  <EditTrade />
                 </ProtectedRoute>
               }
             />

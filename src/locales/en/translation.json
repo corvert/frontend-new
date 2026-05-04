@@ -208,6 +208,9 @@
     "loadingPerformance": "Loading totals...",
     "performanceMissing": "Totals are missing.",
     "performanceLoadFailed": "Failed to load totals.",
+    "returnMethod": "Return",
+    "returnMethodTotal": "Total return",
+    "returnMethodXirr": "XIRR annual return",
     "portfolioValue": "Portfolio value",
     "capitalGrowth": "Capital growth",
     "fees": "Fees",
@@ -345,11 +348,14 @@
   },
   "trade": {
     "title": "Add trade",
+    "editTitle": "Edit trade",
     "loading": "Loading...",
     "add": "Make a trade",
     "loadFailed": "Failed to load trade data",
     "created": "Trade saved",
+    "updated": "Trade updated",
     "createFailed": "Failed to save trade",
+    "updateFailed": "Failed to update trade",
     "account": "Account",
     "asset": "Asset",
     "side": "Side",
@@ -362,6 +368,7 @@
     "note": "Note",
     "notePlaceholder": "Optional note",
     "submit": "Save",
+    "saveChanges": "Save changes",
     "cancel": "Cancel",
     "accountRequired": "Please select an account",
     "assetRequired": "Please select an asset",
@@ -370,7 +377,9 @@
     "dateRequired": "Please select date",
     "noAssetsHint": "No assets yet. Create one first.",
     "priceUpsertFailed": "Trade saved, but failed to save price history for this asset.",
-     "transactionSum": "Sum"
+     "transactionSum": "Sum",
+     "actions": "Actions",
+     "edit": "Edit"
   },
   "asset": {
     "title": "Add asset",

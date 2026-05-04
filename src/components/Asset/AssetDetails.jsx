@@ -21,6 +21,7 @@ const AssetDetails = () => {
   const [loading, setLoading] = useState(true);
   const [assetRow, setAssetRow] = useState(null);
   const [perfSummary, setPerfSummary] = useState(null);
+  const [returnMethod, setReturnMethod] = useState("TOTAL");
   const [assetSeries, setAssetSeries] = useState([]);
   const [loadingSeries, setLoadingSeries] = useState(false);
   const [seriesFrom, setSeriesFrom] = useState("");
@@ -178,13 +179,45 @@ const AssetDetails = () => {
     (assetRow?.feesBase || 0) -
     (assetRow?.currencyImpactBase || 0);
 
-  const formatRoiPct = (value) => {
+  const formatPercentValue = (value, suffix = "") => {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return null;
+    return `${Math.round(v * 100) / 100}%${suffix}`;
+  };
+
+  const getYearsBetween = (fromDate, toDate) => {
+    if (!fromDate || !toDate) return null;
+    const from = new Date(`${fromDate}T00:00:00`);
+    const to = new Date(`${toDate}T00:00:00`);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return null;
+    const days = (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
+    if (!Number.isFinite(days) || days <= 0) return null;
+    return days / 365.25;
+  };
+
+  const annualizePct = (pct, years) => {
+    if (!Number.isFinite(pct) || !Number.isFinite(years) || years <= 0) return null;
+    const base = 1 + pct / 100;
+    if (base <= 0) return null;
+    const annual = (Math.pow(base, 1 / years) - 1) * 100;
+    if (!Number.isFinite(annual)) return null;
+    return annual;
+  };
+
+  const formatAssetPct = (value) => {
     const baseVal = Number(assetCostBase ?? 0);
     const v = Number(value ?? 0);
     if (!Number.isFinite(baseVal) || baseVal === 0 || !Number.isFinite(v)) return null;
     const pct = (v / baseVal) * 100;
     if (!Number.isFinite(pct)) return null;
-    return `${Math.round(pct * 100) / 100}%`;
+
+    if (returnMethod === "TOTAL") {
+      return formatPercentValue(pct);
+    }
+
+    const years = getYearsBetween(perfSummary?.from, perfSummary?.to);
+    const annual = annualizePct(pct, years);
+    return annual == null ? null : formatPercentValue(annual, " p.a.");
   };
 
   const formatChartDate = (dateStr) => {
@@ -351,6 +384,7 @@ const AssetDetails = () => {
   const tradeRows = useMemo(() => {
     return tradesSorted.map((tr) => ({
       id: tr.id ?? `${tr.executedAt}-${tr.side}-${tr.quantity}-${tr.price}`,
+      tradeId: tr.id,
       executedAt: tr.executedAt,
       side: tr.side,
       quantity: tr.quantity,
@@ -412,8 +446,32 @@ const AssetDetails = () => {
         },
       },
       { field: "note", headerName: t("trade.note") ?? "Note", flex: 1.4 },
+      {
+        field: "actions",
+        headerName: t("trade.actions") ?? "Actions",
+        flex: 0.7,
+        sortable: false,
+        renderCell: (params) => {
+          if (!params.row?.tradeId) return null;
+          return (
+            <button
+              type="button"
+              onClick={() =>
+                navigate(
+                  `/trades/${params.row.tradeId}/edit?returnTo=${encodeURIComponent(
+                    location.pathname + location.search,
+                  )}`,
+                )
+              }
+              className="text-sm underline text-slate-600 hover:text-slate-900"
+            >
+              {t("trade.edit") ?? "Edit"}
+            </button>
+          );
+        },
+      },
     ];
-  }, [t, assetRow]);
+  }, [t, navigate, location.pathname, location.search]);
 
   const cashRows = useMemo(() => {
     return cashSorted.map((ct) => ({
@@ -611,14 +669,28 @@ const AssetDetails = () => {
 
       {/* Summary cards */}
       <div className="border rounded p-4 mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+          <div className="font-semibold">{t("tracker.performanceTitle")}</div>
+          <div className="flex items-center gap-2 text-sm">
+            <label className="text-slate-600">{t("tracker.returnMethod")}</label>
+            <select
+              value={returnMethod}
+              onChange={(e) => setReturnMethod(e.target.value)}
+              className="border rounded px-2 py-1"
+            >
+              <option value="TOTAL">{t("tracker.returnMethodTotal")}</option>
+              <option value="XIRR">{t("tracker.returnMethodXirr")}</option>
+            </select>
+          </div>
+        </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-sm">
           <div>
             <div className="text-slate-600">{t("asset.value") ?? "Value"}</div>
             <div className="font-mono">
               {round2(assetRow.marketValueBase)} {base}
             </div>
-            {formatRoiPct(assetValueGain) && (
-              <div className="text-xs text-slate-500">{formatRoiPct(assetValueGain)}</div>
+            {formatAssetPct(assetValueGain) && (
+              <div className="text-xs text-slate-500">{formatAssetPct(assetValueGain)}</div>
             )}
           </div>
 
@@ -627,8 +699,8 @@ const AssetDetails = () => {
             <div className="font-mono">
               {round2(assetCapitalGain)} {base}
             </div>
-            {formatRoiPct(assetCapitalGain) && (
-              <div className="text-xs text-slate-500">{formatRoiPct(assetCapitalGain)}</div>
+            {formatAssetPct(assetCapitalGain) && (
+              <div className="text-xs text-slate-500">{formatAssetPct(assetCapitalGain)}</div>
             )}
           </div>
 
@@ -637,8 +709,8 @@ const AssetDetails = () => {
             <div className="font-mono">
               {round2(assetRow.feesBase)} {base}
             </div>
-            {formatRoiPct(assetRow.feesBase) && (
-              <div className="text-xs text-slate-500">{formatRoiPct(assetRow.feesBase)}</div>
+            {formatAssetPct(assetRow.feesBase) && (
+              <div className="text-xs text-slate-500">{formatAssetPct(assetRow.feesBase)}</div>
             )}
           </div>
 
@@ -647,8 +719,8 @@ const AssetDetails = () => {
             <div className="font-mono">
               {round2(assetRow.incomeBase)} {base}
             </div>
-            {formatRoiPct(assetRow.incomeBase) && (
-              <div className="text-xs text-slate-500">{formatRoiPct(assetRow.incomeBase)}</div>
+            {formatAssetPct(assetRow.incomeBase) && (
+              <div className="text-xs text-slate-500">{formatAssetPct(assetRow.incomeBase)}</div>
             )}
           </div>
 
@@ -657,9 +729,9 @@ const AssetDetails = () => {
             <div className="font-mono">
               {round2(assetRow.currencyImpactBase)} {base}
             </div>
-            {formatRoiPct(assetRow.currencyImpactBase) && (
+            {formatAssetPct(assetRow.currencyImpactBase) && (
               <div className="text-xs text-slate-500">
-                {formatRoiPct(assetRow.currencyImpactBase)}
+                {formatAssetPct(assetRow.currencyImpactBase)}
               </div>
             )}
           </div>
@@ -669,8 +741,10 @@ const AssetDetails = () => {
             <div className="font-mono">
               {round2(assetRow.totalReturnBase)} {base}
             </div>
-            {formatRoiPct(assetRow.totalReturnBase) && (
-              <div className="text-xs text-slate-500">{formatRoiPct(assetRow.totalReturnBase)}</div>
+            {formatAssetPct(assetRow.totalReturnBase) && (
+              <div className="text-xs text-slate-500">
+                {formatAssetPct(assetRow.totalReturnBase)}
+              </div>
             )}
           </div>
         </div>

@@ -20,6 +20,7 @@ const PortfolioOverview = () => {
   const [asOf, setAsOf] = useState("");
   const [perf, setPerf] = useState(null);
   const [loadingPerf, setLoadingPerf] = useState(false);
+  const [returnMethod, setReturnMethod] = useState("TOTAL");
   const [assetPerf, setAssetPerf] = useState([]);
   const [loadingAssetPerf, setLoadingAssetPerf] = useState(false);
   const [series, setSeries] = useState([]);
@@ -384,6 +385,47 @@ const PortfolioOverview = () => {
     const pct = (v / base) * 100;
     if (!Number.isFinite(pct)) return null;
     return `${Math.round(pct * 100) / 100}%`;
+  };
+
+  const formatPercentValue = (value, suffix = "") => {
+    const v = Number(value);
+    if (!Number.isFinite(v)) return null;
+    return `${Math.round(v * 100) / 100}%${suffix}`;
+  };
+
+  const getYearsBetween = (fromDate, toDate) => {
+    if (!fromDate || !toDate) return null;
+    const from = new Date(`${fromDate}T00:00:00`);
+    const to = new Date(`${toDate}T00:00:00`);
+    if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return null;
+    const days = (to.getTime() - from.getTime()) / (1000 * 60 * 60 * 24);
+    if (!Number.isFinite(days) || days <= 0) return null;
+    return days / 365.25;
+  };
+
+  const annualizePct = (pct, years) => {
+    if (!Number.isFinite(pct) || !Number.isFinite(years) || years <= 0) return null;
+    const base = 1 + pct / 100;
+    if (base <= 0) return null;
+    const annual = (Math.pow(base, 1 / years) - 1) * 100;
+    if (!Number.isFinite(annual)) return null;
+    return annual;
+  };
+
+  const formatComponentPct = (value) => {
+    const base = Number(perfCostBasisBase ?? 0);
+    const v = Number(value ?? 0);
+    if (!Number.isFinite(base) || base === 0 || !Number.isFinite(v)) return null;
+    const pct = (v / base) * 100;
+    if (!Number.isFinite(pct)) return null;
+
+    if (returnMethod === "TOTAL") {
+      return formatPercentValue(pct);
+    }
+
+    const years = getYearsBetween(perf?.from, perf?.to);
+    const annual = annualizePct(pct, years);
+    return annual == null ? null : formatPercentValue(annual, " p.a.");
   };
 
   const formatPctOfPortfolio = (value) => {
@@ -1048,7 +1090,20 @@ const PortfolioOverview = () => {
 
           {/* Base totals */}
           <div className="border rounded p-4 mb-6">
-            <div className="font-semibold mb-2">{t("tracker.performanceTitle")}</div>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+              <div className="font-semibold">{t("tracker.performanceTitle")}</div>
+              <div className="flex items-center gap-2 text-sm">
+                <label className="text-slate-600">{t("tracker.returnMethod")}</label>
+                <select
+                  value={returnMethod}
+                  onChange={(e) => setReturnMethod(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="TOTAL">{t("tracker.returnMethodTotal")}</option>
+                  <option value="XIRR">{t("tracker.returnMethodXirr")}</option>
+                </select>
+              </div>
+            </div>
 
             {loadingPerf ? (
               <div className="text-sm text-slate-600">{t("tracker.loadingPerformance")}</div>
@@ -1068,8 +1123,10 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perfCapitalGrowth || 0) * 100) / 100)}
                   </div>
-                  {formatRoiPct(perfCapitalGrowth) && (
-                    <div className="text-xs text-slate-500">{formatRoiPct(perfCapitalGrowth)}</div>
+                  {formatComponentPct(perfCapitalGrowth) && (
+                    <div className="text-xs text-slate-500">
+                      {formatComponentPct(perfCapitalGrowth)}
+                    </div>
                   )}
                 </div>
 
@@ -1078,8 +1135,8 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.fees || 0) * 100) / 100)}
                   </div>
-                  {formatRoiPct(perf.fees) && (
-                    <div className="text-xs text-slate-500">{formatRoiPct(perf.fees)}</div>
+                  {formatComponentPct(perf.fees) && (
+                    <div className="text-xs text-slate-500">{formatComponentPct(perf.fees)}</div>
                   )}
                 </div>
 
@@ -1088,8 +1145,8 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.income || 0) * 100) / 100)}
                   </div>
-                  {formatRoiPct(perf.income) && (
-                    <div className="text-xs text-slate-500">{formatRoiPct(perf.income)}</div>
+                  {formatComponentPct(perf.income) && (
+                    <div className="text-xs text-slate-500">{formatComponentPct(perf.income)}</div>
                   )}
                 </div>
 
@@ -1098,8 +1155,10 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perfCurrencyImpact || 0) * 100) / 100)}
                   </div>
-                  {formatRoiPct(perfCurrencyImpact) && (
-                    <div className="text-xs text-slate-500">{formatRoiPct(perfCurrencyImpact)}</div>
+                  {formatComponentPct(perfCurrencyImpact) && (
+                    <div className="text-xs text-slate-500">
+                      {formatComponentPct(perfCurrencyImpact)}
+                    </div>
                   )}
                 </div>
 
@@ -1108,8 +1167,15 @@ const PortfolioOverview = () => {
                   <div className="font-mono">
                     {String(Math.round(Number(perf.totalReturn || 0) * 100) / 100)}
                   </div>
-                  {formatRoiPct(perf.totalReturn) && (
-                    <div className="text-xs text-slate-500">{formatRoiPct(perf.totalReturn)}</div>
+                  {returnMethod === "TOTAL" && formatPercentValue(perf?.totalReturnPercent) && (
+                    <div className="text-xs text-slate-500">
+                      {formatPercentValue(perf?.totalReturnPercent)}
+                    </div>
+                  )}
+                  {returnMethod === "XIRR" && formatPercentValue(perf?.xirr, " p.a.") && (
+                    <div className="text-xs text-slate-500">
+                      {formatPercentValue(perf?.xirr, " p.a.")}
+                    </div>
                   )}
                 </div>
               </div>

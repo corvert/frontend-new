@@ -203,6 +203,9 @@
     "loadingPerformance": "Kogusummade laadimine...",
     "performanceMissing": "Kogusummad puuduvad.",
     "performanceLoadFailed": "Kogusummade laadimine ebaõnnestus.",
+    "returnMethod": "Tootlus",
+    "returnMethodTotal": "Kogutootlus",
+    "returnMethodXirr": "XIRR aastatootlus",
     "portfolioValue": "Portfelli väärtus",
     "capitalGrowth": "Kapitali kasv",
     "fees": "Tasud",
@@ -334,11 +337,14 @@
   },
   "trade": {
     "title": "Lisa tehing",
+    "editTitle": "Muuda tehingut",
     "loading": "Laadimine...",
     "add": "Tee tehing",
     "loadFailed": "Tehingu andmete laadimine ebaõnnestus",
     "created": "Tehing salvestatud",
+    "updated": "Tehing uuendatud",
     "createFailed": "Tehingu salvestamine ebaõnnestus",
+    "updateFailed": "Tehingu uuendamine ebaõnnestus",
     "account": "Konto",
     "asset": "Vara",
     "side": "Tehingu tüüp",
@@ -351,6 +357,7 @@
     "note": "Märkus",
     "notePlaceholder": "Valikuline märkus",
     "submit": "Salvesta",
+    "saveChanges": "Salvesta muudatused",
     "cancel": "Tühista",
     "accountRequired": "Palun vali konto",
     "assetRequired": "Palun vali vara",
@@ -359,7 +366,9 @@
     "dateRequired": "Palun vali kuupäev",
     "noAssetsHint": "Varasid pole veel. Loo esmalt vara.",
     "priceUpsertFailed": "Tehing salvestatud, kuid selle vara hinnaloo salvestamine ebaõnnestus.",
-    "transactionSum": "Summa"
+    "transactionSum": "Summa",
+    "actions": "Tegevused",
+    "edit": "Muuda"
   },
   "asset": {
     "title": "Lisa vara",

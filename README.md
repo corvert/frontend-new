@@ -1,16 +1,46 @@
-# React + Vite
+# Investment Tracker Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Overview
 
-Currently, two official plugins are available:
+This React + Vite frontend powers the Investment Tracker application. It provides the user interface for authentication, portfolio management, cash flow tracking. The UI is localized in English and Estonian.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- Authentication flows: login, signup, password reset, OAuth redirect handling
+- Portfolio tracking: assets, trades, and cash operations
+- Admin views for audit logs and user management
+- Internationalization (en, et)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- React 19 + Vite
+- React Router
+- MUI + Tailwind CSS
+- Axios for API calls
+- i18next for localization
+- Vitest + Testing Library for tests
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Configuration
+
+The frontend reads the API origin from `VITE_API_URL` and defaults to `http://localhost:8080`.
+
+Example `.env`:
+
+```bash
+VITE_API_URL=http://localhost:8080
+```
+
+During development, Vite proxies `/api` and `/oauth2` to the backend.
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Tests
+
+```bash
+npm run test
+```
