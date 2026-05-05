@@ -132,8 +132,8 @@ const Login = () => {
               </h1>
               <p className="text-slate-600 text-center">{t("auth.loginDescription")}</p>
               <div className="flex items-center justify-between gap-1 py-5 ">
-                <Link
-                  to={`${apiUrl}/oauth2/authorization/google`}
+                <a
+                  href={`${apiUrl}/oauth2/authorization/google`}
                   className="flex gap-1 items-center justify-center flex-1 border p-2 shadow-sm shadow-slate-200 rounded-md hover:bg-slate-300 transition-all duration-300"
                 >
                   <span>
@@ -142,7 +142,7 @@ const Login = () => {
                   <span className="font-semibold sm:text-customText text-xs">
                     {t("auth.loginGoogle")}
                   </span>
-                </Link>
+                </a>
                 {/* <Link
                   to={`${apiUrl}/oauth2/authorization/github`}
                   className="flex gap-1 items-center justify-center flex-1 border p-2 shadow-sm shadow-slate-200 rounded-md hover:bg-slate-300 transition-all duration-300"

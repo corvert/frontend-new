@@ -11,13 +11,13 @@ const OAuth2RedirectHandler = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get("token");
-    console.log("OAuth2RedirectHandler: Params:", params.toString());
-    console.log("OAuth2RedirectHandler: Token:", token);
+    // console.log("OAuth2RedirectHandler: Params:", params.toString());
+    // console.log("OAuth2RedirectHandler: Token:", token);
 
     if (token) {
       try {
         const decodedToken = jwtDecode(token);
-        console.log("Decoded Token:", decodedToken);
+        // console.log("Decoded Token:", decodedToken);
 
         localStorage.setItem("JWT_TOKEN", token);
 
@@ -25,7 +25,7 @@ const OAuth2RedirectHandler = () => {
           username: decodedToken.sub,
           roles: decodedToken.roles.split(","),
         };
-        console.log("User Object:", user);
+        // console.log("User Object:", user);
         localStorage.setItem("USER", JSON.stringify(user));
 
         // Update context state
@@ -34,7 +34,7 @@ const OAuth2RedirectHandler = () => {
 
         // Delay navigation to ensure local storage operations complete
         setTimeout(() => {
-          console.log("Navigating to /portfolio");
+          // console.log("Navigating to /portfolio");
           navigate("/portfolio");
         }, 100); // 100ms delay
       } catch (error) {
@@ -42,7 +42,7 @@ const OAuth2RedirectHandler = () => {
         navigate("/login");
       }
     } else {
-      console.log("Token not found in URL, redirecting to login");
+      //console.log("Token not found in URL, redirecting to login");
       navigate("/login");
     }
   }, [location, navigate, setToken, setIsAdmin]);
